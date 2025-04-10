@@ -86,8 +86,8 @@ const HomePage = () => {
           w="100vw"
           h="100%"
           bgImage={{ base: "url('/mobile-bg.gif')", md: "url('/bg1.gif')" }}
-          bgSize={{ base: "contain", md: "cover" }} // Contain on mobile, Cover on desktop
-          bgPosition={{ base: "top center", md: "center" }} // Adjust position for different views
+          bgSize={{ base: "contain", md: "cover" }}
+          bgPosition={{ base: "top center", md: "center" }}
           bgRepeat="no-repeat"
           display="flex"
           alignItems="center"
