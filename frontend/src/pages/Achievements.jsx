@@ -1,6 +1,6 @@
 import { Box, Image, Text, SimpleGrid, Heading, Container, useBreakpointValue } from "@chakra-ui/react";
 import Navbar from "../components/ui/Navbar";
-import Footer from "../components/ui/footer";
+import Footer from "../components/ui/Footer";
 
 const achievements = [
   { id: 1, image: "/Awards/1.png", title: "Plaque of Recognition", description: "is hereby presented to 540th Air Base Group for the Unit's commendable effort and exemplary innovation being adjudged as the 1st Place in the AIBDC Innovation Challenge 2025 \"Best Enhanced Model Portable Runway Lights\" Given this day 4th day of February 2025 during the AIBDC 3rd Founding Anniversary at PAF Multi-purpose Gymnasium, Col Jesus Villamor Air Base, Pasay City." },
