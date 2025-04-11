@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Input, Button, VStack, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/ui/Navbar";
+import Navbar from "../components/ui/navbar";
 
 const POLDashboard = () => {
     const [email, setEmail] = useState("");

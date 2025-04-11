@@ -1,4 +1,4 @@
-import Navbar from "../components/ui/Navbar";
+import Navbar from "../components/ui/navbar";
 import Footer from "../components/ui/Footer";
 import { Box, VStack, Heading, Text, Container, useBreakpointValue } from "@chakra-ui/react";
 
