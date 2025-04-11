@@ -1,6 +1,6 @@
 import { Box, VStack, Heading, Text, Container, useBreakpointValue } from "@chakra-ui/react";
-import Navbar from "../components/ui/Navbar";
-import Footer from "../components/ui/footer";
+import Navbar from "../components/ui/navbar";
+import Footer from "../components/ui/Footer";
 
 const History = () => {
   const videoWidth = useBreakpointValue({ base: "100%", md: "80%", lg: "70%" });
@@ -85,7 +85,7 @@ const History = () => {
               controls
               style={{ objectFit: "cover" }}
             >
-              <source src="https://storage.bunnycdn.com/540-website/history.mp4" type="video/mp4" />
+              <source src="https://540-website.b-cdn.net/history.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </Box>

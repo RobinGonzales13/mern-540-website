@@ -10,7 +10,7 @@ import "swiper/css/autoplay"
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import axios from "axios";
 import Navbar from "../components/ui/navbar";
-import Footer from "../components/ui/footer";
+import Footer from "../components/ui/Footer";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -43,7 +43,7 @@ const HomePage = () => {
   };
 
   return (
-    <Box 
+    <Box
       position="relative" 
       minH="100vh"
       background="linear-gradient(135deg, rgb(5, 19, 38) 0%, rgb(8, 28, 54) 100%)"
@@ -60,6 +60,23 @@ const HomePage = () => {
         pointerEvents: "none"
       }}
     >
+      {/* Background Image Layer */}
+      <Box
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        backgroundImage={{
+          base: "url('https://540-website.b-cdn.net/mobile-bg.gif')",
+          md: "url('https://540-website.b-cdn.net/bg1.gif')"
+        }}
+        backgroundSize="100% auto"
+        backgroundPosition="center top"
+        backgroundRepeat="no-repeat"
+        zIndex={0}
+      />
+      
       <Navbar showContactButton={true} />
 
       <Grid

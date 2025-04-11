@@ -27,3 +27,5 @@ dist-ssr
 public/history.mp4
 public/mobile-bg.gif
 public/bg1.gif
+
+.vercel
