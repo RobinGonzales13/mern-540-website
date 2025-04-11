@@ -1,6 +1,6 @@
-import { Box, VStack, Heading, Text, Container, useBreakpointValue } from "@chakra-ui/react";
-import Navbar from "../components/ui/navbar";
+import Navbar from "../components/ui/Navbar";
 import Footer from "../components/ui/Footer";
+import { Box, VStack, Heading, Text, Container, useBreakpointValue } from "@chakra-ui/react";
 
 const History = () => {
   const videoWidth = useBreakpointValue({ base: "100%", md: "80%", lg: "70%" });
