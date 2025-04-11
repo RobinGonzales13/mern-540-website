@@ -1,5 +1,5 @@
 import { Box, Image, Text, SimpleGrid, Heading, Container, useBreakpointValue } from "@chakra-ui/react";
-import Navbar from "../components/ui/navbar";
+import { Navbar } from '../components/ui/navbar';
 import Footer from "../components/ui/Footer";
 
 const achievements = [

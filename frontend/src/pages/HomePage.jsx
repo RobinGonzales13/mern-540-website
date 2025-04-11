@@ -9,7 +9,7 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay"
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import axios from "axios";
-import Navbar from "../components/ui/navbar";
+import { Navbar } from '../components/ui/navbar';
 import Footer from "../components/ui/Footer";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
