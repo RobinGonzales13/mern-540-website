@@ -1,25 +1,22 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import validator from "validator"; // For Securtiy! Wag idelete! validator.js for email & input validation
+import validator from "validator";
 import rateLimit from "express-rate-limit";
 import axios from "axios";
 
 dotenv.config();
 const router = express.Router();
 
-// Set Rate Limiting (Prevent Spam) - CYBER SECURITY FUNCTION DO NOT DELETE!
 const contactLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // Allow max 5 requests per IP within the time window
+    windowMs: 15 * 60 * 1000,
+    max: 10,
     message: { success: false, message: "Too many requests, please try again later." },
 });
 
-// ✅ 2. Contact API Route with reCAPTCHA Validation
 router.post("/", contactLimiter, async (req, res) => {
     let { name, email, message, captcha } = req.body;
 
-    // ✅ Step 1: Validate Inputs
     if (!name || !email || !message || !captcha) {
         return res.status(400).json({ success: false, message: "All fields are required, including CAPTCHA." });
     }
@@ -28,9 +25,8 @@ router.post("/", contactLimiter, async (req, res) => {
         return res.status(400).json({ success: false, message: "Invalid email format." });
     }
 
-    // ✅ Step 2: Verify reCAPTCHA Token
     try {
-        const captchaSecret = process.env.RECAPTCHA_SECRET_KEY; // Add this to .env
+        const captchaSecret = process.env.RECAPTCHA_SECRET_KEY;
         const captchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${captchaSecret}&response=${captcha}`;
 
         const captchaResponse = await axios.post(captchaVerifyUrl);
@@ -42,7 +38,6 @@ router.post("/", contactLimiter, async (req, res) => {
         return res.status(500).json({ success: false, message: "Error verifying CAPTCHA." });
     }
 
-    // ✅ 2. Prevent Header Injection
     name = validator.escape(name.replace(/(\r\n|\n|\r)/gm, ""));
     email = validator.escape(email.replace(/(\r\n|\n|\r)/gm, ""));
     message = validator.escape(message);
@@ -58,7 +53,7 @@ router.post("/", contactLimiter, async (req, res) => {
 
         const mailOptions = {
             from: `"Contact Us Form" <${process.env.EMAIL_USER}>`,
-            to: process.env.EMAIL_USER, // ✅ Make sure this is a real email
+            to: process.env.EMAIL_USER,
             subject: `📩 New Contact Message from ${name}`,
             html: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; max-width: 600px;">

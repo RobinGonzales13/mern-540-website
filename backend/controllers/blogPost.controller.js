@@ -46,7 +46,6 @@ export const updatePost = async (req, res) => {
     const { title, content } = req.body;
 
     try {
-        // ✅ Check if post exists
         const post = await BlogPost.findById(id);
         if (!post) {
             return res.status(404).json({ success: false, message: "Post not found" });
@@ -54,12 +53,10 @@ export const updatePost = async (req, res) => {
 
         let updatedFields = { title, content };
 
-        // ✅ Handle image updates (if new images are uploaded)
         if (req.files && req.files.length > 0) {
             updatedFields.images = req.files.map((file) => `/uploads/${file.filename}`);
         }
 
-        // ✅ Update post
         const updatedPost = await BlogPost.findByIdAndUpdate(id, updatedFields, { new: true });
 
         res.json({ success: true, message: "Post updated successfully", updatedPost });
@@ -69,7 +66,6 @@ export const updatePost = async (req, res) => {
     }
 };
 
-// Delete posts
 export const deletePost = async (req, res) => {
     try {
         const { id } = req.params;

@@ -14,8 +14,8 @@ const AdminDashboard = () => {
     const [posts, setPosts] = useState([]);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [images, setImages] = useState([]);  // ✅ Holds selected images
-    const [previews, setPreviews] = useState([]);  // ✅ Holds image previews
+    const [images, setImages] = useState([]);
+    const [previews, setPreviews] = useState([]);
     const [editingPost, setEditingPost] = useState(null);
     const [updatedTitle, setUpdatedTitle] = useState("");
     const [updatedContent, setUpdatedContent] = useState("");
@@ -31,7 +31,6 @@ const AdminDashboard = () => {
         fetchPosts();
     }, []);
 
-    // ✅ Fetch all posts
     const fetchPosts = async () => {
         try {
             const response = await axios.get("http://localhost:5000/api/posts");
@@ -41,7 +40,6 @@ const AdminDashboard = () => {
         }
     };
 
-    // ✅ Handle file input change (show preview)
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
     
@@ -50,13 +48,12 @@ const AdminDashboard = () => {
             return;
         }
     
-        setImages(files); // ✅ Store selected images
+        setImages(files);
     
         const previewUrls = files.map(file => URL.createObjectURL(file));
-        setPreviews(previewUrls); // ✅ Store preview URLs
+        setPreviews(previewUrls);
     };   
 
-    // ✅ Handle post upload
     const handleUpload = async (e) => {
         e.preventDefault();
     
@@ -68,7 +65,7 @@ const AdminDashboard = () => {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("content", content);
-        images.forEach(image => formData.append("images", image)); // ✅ Append multiple images
+        images.forEach(image => formData.append("images", image));
     
         try {
             await axios.post("http://localhost:5000/api/posts/create", formData, {
@@ -86,7 +83,6 @@ const AdminDashboard = () => {
         }
     };
 
-    // ✅ Handle post edit mode
     const handleEdit = (post) => {
         setEditingPost(post._id);
         setUpdatedTitle(post.title);
@@ -94,7 +90,6 @@ const AdminDashboard = () => {
         setNewImages([]);
     };
 
-    // ✅ Handle new image selection
     const handleNewImageChange = (e) => {
         const files = Array.from(e.target.files);
         
@@ -103,16 +98,14 @@ const AdminDashboard = () => {
             return;
         }
 
-        setNewImages(files); // ✅ Store selected images
+        setNewImages(files);
     };
 
-    // ✅ Handle saving edited post
     const handleSaveEdit = async (postId) => {
         const formData = new FormData();
         formData.append("title", updatedTitle);
         formData.append("content", updatedContent);
         
-        // ✅ Append images only if new images are selected
         if (newImages.length > 0) {
             newImages.forEach((image) => formData.append("images", image));
         }
@@ -124,25 +117,23 @@ const AdminDashboard = () => {
     
             alert("Post updated successfully!");
             setEditingPost(null);
-            fetchPosts(); // ✅ Refresh posts after editing
+            fetchPosts();
         } catch (error) {
             console.error("Error updating post:", error);
             alert("Error updating post");
         }
     };
 
-    // ✅ Handle post deletion
     const handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:5000/api/posts/${id}`);
             alert("Post deleted successfully!");
-            fetchPosts(); // ✅ Refresh posts after deletion
+            fetchPosts();
         } catch (error) {
             alert("Error deleting post");
         }
     };
 
-    // ✅ Handle logout
     const handleLogout = () => {
         localStorage.removeItem("token");
         window.location.href = "/Admin-Login";
@@ -154,7 +145,6 @@ const AdminDashboard = () => {
 
     return (
         <Box minH="100vh" bg="gray.100">
-            {/* ✅ Admin Dashboard Header */}
             <Flex bg="white" p={4} align="center" boxShadow="md">
                 <Image src="/logo.png" alt="Logo" boxSize="50px" mr={3} />
                 <Text fontSize="xl" fontWeight="bold" color="gray.800">
@@ -165,11 +155,9 @@ const AdminDashboard = () => {
                 </Button>
             </Flex>
 
-            {/* ✅ Blog Post Upload Form */}
             <Box p={6}>
                 <Heading mb={4}>Create a New Post</Heading>
                 <VStack spacing={4} align="start">
-                    {/* ✅ Upload Tip */}
                     <Box 
                         bg="yellow.100" 
                         border="1px solid" 
@@ -195,7 +183,6 @@ const AdminDashboard = () => {
                 </VStack>
             </Box>
 
-            {/* ✅ Manage Posts Section */}
             <Box p={6} display="flex" flexDirection="column" alignItems="center" textAlign="center">
                 <Heading mb={4}>Manage Posts</Heading>
                 <VStack spacing={6} align="center" w={{ base: "90%", md: "33.33%" }}>
@@ -204,7 +191,6 @@ const AdminDashboard = () => {
                     ) : (
                         posts.map((post) => (
                             <Box key={post._id} p={4} borderWidth="1px" borderRadius="lg" w="100%" textAlign="center" position="relative">
-                                {/* ✅ SwiperJS Carousel */}
                                 {post.images && post.images.length > 0 ? (
                                     <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} navigation pagination={{ clickable: true }}>
                                         {post.images.map((img, index) => (
@@ -217,7 +203,6 @@ const AdminDashboard = () => {
                                     <Text>No images available</Text>
                                 )}
 
-                                {/* ✅ Edit Mode: Show Input Fields */}
                                 {editingPost === post._id ? (
                                     <>
                                         <Input value={updatedTitle} onChange={(e) => setUpdatedTitle(e.target.value)} />
@@ -231,7 +216,6 @@ const AdminDashboard = () => {
                                         <Text fontSize="xl" fontWeight="bold" mt={2}>{post.title}</Text>
                                         <Text>{post.content}</Text>
 
-                                        {/* ✅ Upload Date in Bottom-Right Corner */}
                                         {post.createdAt && (
                                             <Text fontSize="sm" color="gray.500" position="absolute" bottom={2} right={2}>
                                                 {format(new Date(post.createdAt), "MMMM d, yyyy")}

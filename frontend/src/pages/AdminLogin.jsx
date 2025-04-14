@@ -8,35 +8,32 @@ const AdminLogin = () => {
     const [password, setPassword] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [step, setStep] = useState(1); // 1 = Login, 2 = OTP Verification, 3 = Change Password
+    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    // ✅ Request OTP for login
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
             const response = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-            alert(response.data.message); // "OTP sent to your email"
-            setStep(2); // ✅ Switch to OTP step
+            alert(response.data.message);
+            setStep(2);
         } catch (error) {
             alert(error.response?.data?.message || "Login failed");
         }
         setLoading(false);
     };
 
-    // ✅ Verify OTP and login
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
             const response = await axios.post("http://localhost:5000/api/auth/verify-otp", { email, otp });
             
-            // ✅ Store token in localStorage
             localStorage.setItem("token", response.data.token);
 
             alert("Login successful!");
-            window.location.href = "/admin-dashboard"; // ✅ Redirect to dashboard
+            window.location.href = "/admin-dashboard";
         } catch (error) {
             alert(error.response?.data?.message || "OTP verification failed");
         }
@@ -58,7 +55,7 @@ const AdminLogin = () => {
                         <Button colorScheme="blue" onClick={handleLogin} isLoading={loading}>Request OTP</Button>
                         <Text color="blue.500" cursor="pointer" onClick={() => setStep(3)}>Forgot Password?</Text>
                     </>
-                ) : step === 2 ? ( // ✅ Ensure OTP input is visible
+                ) : step === 2 ? (
                     <>
                         <Input placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} required />
                         <Button colorScheme="green" onClick={handleVerifyOtp} isLoading={loading}>Verify OTP</Button>

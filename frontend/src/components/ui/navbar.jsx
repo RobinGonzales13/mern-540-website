@@ -17,7 +17,6 @@ export default function Navbar({ showContactButton = true }) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  // ✅ Handle email submission
   const handleSubmit = async () => {
       if (!name || !email || !message) {
           alert("Please fill in all fields.");
@@ -45,7 +44,6 @@ export default function Navbar({ showContactButton = true }) {
       }
   };
 
-  // Dynamically set logo size based on screen width
   const logoSize = useBreakpointValue({ base: "70px", sm: "80px", md: "90px", lg: "100px" });
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -61,7 +59,6 @@ export default function Navbar({ showContactButton = true }) {
       px={{ base: 4, md: 10 }}
     >
       <Flex h="100%" alignItems="center" w="100%" justifyContent="space-between">
-        {/* Logo and Text (Left-Aligned) */}
         <Flex as={Link} to="/" alignItems="center" _hover={{ textDecoration: 'none', opacity: 0.8 }}>
           <Image src="/logo.png" alt="Logo" boxSize={logoSize} mr={3} />
           <Text fontSize="2xl" fontWeight="bold" color="white" display={{ base: "none", md: "block" }}>
@@ -69,11 +66,9 @@ export default function Navbar({ showContactButton = true }) {
           </Text>
         </Flex>
 
-        {/* Mobile Hamburger Menu */}
         {isMobile ? (
           <IconButton icon={<HamburgerIcon />} variant="ghost" color="white" fontSize="2xl" onClick={onOpen} _hover={{ bg: "rgba(255, 255, 255, 0.2)" }} />
         ) : (
-          // Desktop Navigation Buttons
           <Flex gap={3}>
             <Button as={Link} to="/" variant="ghost" color="white" fontWeight="bold" _hover={{ bg: "rgba(255, 255, 255, 0.52)" }}>
               HOME
@@ -84,7 +79,6 @@ export default function Navbar({ showContactButton = true }) {
             <Button as={Link} to="/achievements" variant="ghost" color="white" fontWeight="bold" _hover={{ bg: "rgba(255, 255, 255, 0.52)" }}>
               ACHIEVEMENTS
             </Button>
-            {/* ✅ Conditionally render Contact Us button */}
             {showContactButton && (
               <Button 
                 variant="outline" 
@@ -100,7 +94,6 @@ export default function Navbar({ showContactButton = true }) {
           </Flex>
         )}
 
-        {/* Mobile Drawer Menu */}
         <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
           <DrawerOverlay />
           <DrawerContent bg="gray.800" color="white">
@@ -117,7 +110,6 @@ export default function Navbar({ showContactButton = true }) {
                 <Button as={Link} to="/achievements" variant="ghost" onClick={onClose} _hover={{ bg: "gray.600" }} color={'white'}>
                   ACHIEVMENTS
                 </Button>
-                {/* ✅ Conditionally render Contact Us button */}
                 {showContactButton && (
                   <Button 
                     variant="outline" 
@@ -136,7 +128,6 @@ export default function Navbar({ showContactButton = true }) {
         </Drawer>
       </Flex>
 
-      {/* ✅ Contact Us Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal} isCentered>
         <ModalOverlay />
         <ModalContent>

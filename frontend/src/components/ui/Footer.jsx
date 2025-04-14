@@ -55,10 +55,9 @@ export default function Footer({ showLogos = true, showAdminButton = true }) {
 
       <Box mt={4} display="flex" justifyContent="space-between" alignItems="center" px="5%" width="90%">
         <Text fontSize="sm" opacity={0.7}>
-          © 2024 Your Company. All rights reserved.
+          © 2025 540 Air Force Group Philippine Air Force. All rights reserved.
         </Text>
 
-        {/* Admin Button (conditionally rendered) */}
         {showAdminButton && (
           <Link to="/Admin-Login">
             <Button color={'white'} size="sm" variant="outline">ADMIN SITE</Button>

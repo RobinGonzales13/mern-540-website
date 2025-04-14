@@ -9,16 +9,13 @@ const ContactUs = () => {
     const [message, setMessage] = useState("");
     const [captchaValue, setCaptchaValue] = useState(null);
     
-    // ✅ Get reCAPTCHA site key
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
     console.log("Loaded reCAPTCHA Site Key:", import.meta.env.VITE_RECAPTCHA_SITE_KEY);
 
-    // ✅ Handle CAPTCHA Validation
     const handleCaptchaChange = (value) => {
         setCaptchaValue(value);
     };
 
-    // ✅ Handle Form Submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -32,7 +29,7 @@ const ContactUs = () => {
                 name,
                 email,
                 message,
-                captcha: captchaValue, // ✅ Send CAPTCHA response
+                captcha: captchaValue,
             });
 
             alert("Message sent successfully!");
@@ -67,7 +64,6 @@ const ContactUs = () => {
                 mb={3} 
             />
             
-            {/* ✅ Check if reCAPTCHA Site Key Exists */}
             {siteKey ? (
                 <ReCAPTCHA 
                 sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY} 

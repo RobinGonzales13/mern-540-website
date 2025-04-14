@@ -120,7 +120,7 @@ const HomePage = () => {
           alignItems="center" 
           justifyContent="center" 
           textAlign="center" 
-          p={{ base: 4, md: 20 }} // Adjust padding for mobile
+          p={{ base: 4, md: 20 }}
         >
           <Image 
             src="/elephant.png" 
@@ -152,16 +152,15 @@ const HomePage = () => {
                   <Text>No posts available</Text>
                   ) : (
                     posts.map((post) => (
-                      <Box key={post._id} p={4} borderWidth="1px" borderRadius="lg" w="100%" position="relative">                  
-                          {/* ✅ SwiperJS Carousel with Grid Constraint */}
+                      <Box key={post._id} p={4} borderWidth="1px" borderRadius="lg" w="100%" position="relative">
                           <Swiper
-                              modules={[Navigation, Pagination, Autoplay]} // ✅ Add Autoplay
+                              modules={[Navigation, Pagination, Autoplay]}
                               spaceBetween={10}
                               slidesPerView={1}
                               navigation
                               pagination={{ clickable: true }}
-                              autoplay={{ delay: 5000, disableOnInteraction: false }} // ✅ Auto-slide every 3 seconds
-                              loop={true} // ✅ Ensures the slides loop infinitely
+                              autoplay={{ delay: 5000, disableOnInteraction: false }}
+                              loop={true}
                               style={{ width: "100%", height: "100%" }}
                           >
                               {post.images.map((img, index) => (
@@ -192,7 +191,6 @@ const HomePage = () => {
                             </Button>
                           )}
 
-                          {/* ✅ Upload Date in Bottom-Right Corner */}
                           {post.createdAt && (
                               <Text fontSize="sm" color="gray.500" position="absolute" bottom={2} right={2}>
                                   {format(new Date(post.createdAt), "MMMM d, yyyy")}

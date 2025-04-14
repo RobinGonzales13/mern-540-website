@@ -4,9 +4,9 @@ import { createPost, getPosts, deletePost, updatePost  } from "../controllers/bl
 
 const router = express.Router();
 
-router.post("/create", upload.array("images", 10), createPost); // ✅ Allow up to 10 images
+router.post("/create", upload.array("images", 10), createPost);
 router.get("/", getPosts);
 router.delete("/:id", deletePost);
-router.put("/:id", upload.array("images", 10), updatePost); // ✅ Ensure this is correct
+router.put("/:id", upload.array("images", 10), updatePost);
 
 export default router;

@@ -1,5 +1,5 @@
 import express from "express";
-import { requestOTP, verifyOTP, requestPasswordReset, resetPassword } from "../controllers/auth.controller.js"; // ✅ Ensure path is correct
+import { requestOTP, verifyOTP, requestPasswordReset, resetPassword } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
