@@ -1,8 +1,14 @@
 import BlogPost from "../models/blogPost.model.js";
+import cloudinary from "cloudinary";
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET,
+});
 
 export const createPost = async (req, res) => {
     try {
-
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: "At least one image is required!" });
         }
@@ -12,9 +18,13 @@ export const createPost = async (req, res) => {
             return res.status(400).json({ success: false, message: "Title and content are required!" });
         }
 
-        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+        const imageUrls = [];
+        for (let file of req.files) {
+            const result = await cloudinary.uploader.upload(file.path);
+            imageUrls.push(result.secure_url);
+        }
 
-        const newPost = new BlogPost({ title, content, images: imageUrls }); 
+        const newPost = new BlogPost({ title, content, images: imageUrls });
         await newPost.save();
 
         res.status(201).json({ success: true, message: "Post created!", post: newPost });
@@ -23,7 +33,6 @@ export const createPost = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-
 
 export const getPosts = async (req, res) => {
     try {
@@ -54,7 +63,13 @@ export const updatePost = async (req, res) => {
         let updatedFields = { title, content };
 
         if (req.files && req.files.length > 0) {
-            updatedFields.images = req.files.map((file) => `/uploads/${file.filename}`);
+            const imageUrls = [];
+            for (let file of req.files) {
+                const result = await cloudinary.uploader.upload(file.path);
+                imageUrls.push(result.secure_url);
+            }
+
+            updatedFields.images = imageUrls;
         }
 
         const updatedPost = await BlogPost.findByIdAndUpdate(id, updatedFields, { new: true });
