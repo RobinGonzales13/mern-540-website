@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Input, Button, Heading, VStack, Text } from "@chakra-ui/react";
 import axios from "axios";
-import { Navbar } from '../components/ui/navbar';
+import Navbar from '../components/ui/navbar';
 
 const AdminLogin = () => {
     const [email, setEmail] = useState("");

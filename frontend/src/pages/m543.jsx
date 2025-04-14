@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Box, Text, VStack, Stack, Badge, Container, Heading } from "@chakra-ui/react";
-import { Navbar } from '../components/ui/navbar';
+import Navbar from '../components/ui/navbar';
 import Footer from "../components/ui/Footer";
 
 const MissionVision = () => {
