@@ -69,7 +69,7 @@ const HomePage = () => {
         bottom={0}
         backgroundImage={{
           base: "url('https://540-website.b-cdn.net/mobile-bg.gif')",
-          md: "url('https://540-website.b-cdn.net/bg1.gif')"
+          md: "url('https://540-website.b-cdn.net/bg2.gif')"
         }}
         backgroundSize="100% auto"
         backgroundPosition="center top"
