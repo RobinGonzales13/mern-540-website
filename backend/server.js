@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mern-540-website.vercel.app"
+  "https://mern-540-website.vercel.app" // Frontend on Vercel
 ];
 
 app.use(cors({
@@ -35,15 +35,6 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes); 
 app.use("/api/posts", blogPostRoutes);
 app.use("/api/contact", contactRoutes);
-
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "frontend", "dist");
-  app.use(express.static(frontendPath));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-}
 
 connectDB();
 
