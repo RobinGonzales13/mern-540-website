@@ -327,7 +327,7 @@ const HomePage = () => {
         </GridItem>
 
         {/* Footer Section */}
-        <GridItem area="footer" bg="blue.300" textAlign="left">
+        <GridItem area="footer" bg="blue.300" textAlign="left" zIndex={1} position="relative">
           <Footer showLogos={true} showAdminButton={true} />
         </GridItem>
       </Grid>
