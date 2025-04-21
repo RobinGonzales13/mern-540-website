@@ -15,7 +15,7 @@ const AdminLogin = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post("https://mern-540-website.vercel.app/Admin-Login", { email, password });
+            const response = await axios.post("https://mern-540-backend.onrender.com/api/auth/login", { email, password });
             alert(response.data.message);
             setStep(2);
         } catch (error) {
@@ -28,7 +28,7 @@ const AdminLogin = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post("https://mern-540-website.vercel.app/Admin-Login", { email, otp });
+            const response = await axios.post("https://mern-540-backend.onrender.com/api/auth/verify-otp", { email, otp });
             
             localStorage.setItem("token", response.data.token);
 
