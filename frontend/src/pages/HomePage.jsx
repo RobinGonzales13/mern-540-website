@@ -12,7 +12,7 @@ import axios from "axios";
 import Navbar from '../components/ui/navbar';
 import Footer from "../components/ui/Footer";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://mern-540-backend.onrender.com";
 
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
@@ -166,7 +166,7 @@ const HomePage = () => {
                               {post.images.map((img, index) => (
                                   <SwiperSlide key={index}>
                                       <Image 
-                                          src={`http://localhost:5000${img}`} 
+                                          src={`https://mern-540-backend.onrender.com${img}`} 
                                           alt={`Slide ${index}`} 
                                           boxSize="100%" 
                                           objectFit="cover"

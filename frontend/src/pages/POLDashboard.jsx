@@ -19,10 +19,10 @@ const POLDashboard = () => {
     const fetchData = async () => {
         try {
             const [invRes, groundRes, jetRes, recRes] = await Promise.all([
-                axios.get("http://localhost:5000/api/inventory"),
-                axios.get("http://localhost:5000/api/ground-fuel"),
-                axios.get("http://localhost:5000/api/jet-fuel"),
-                axios.get("http://localhost:5000/api/records")
+                axios.get("https://mern-540-backend.onrender.com/api/inventory"),
+                axios.get("https://mern-540-backend.onrender.com/api/ground-fuel"),
+                axios.get("https://mern-540-backend.onrender.com/api/jet-fuel"),
+                axios.get("https://mern-540-backend.onrender.com/api/records")
             ]);
             setInventory(invRes.data);
             setGroundFuel(groundRes.data);

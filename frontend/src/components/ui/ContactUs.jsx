@@ -25,7 +25,7 @@ const ContactUs = () => {
         }
 
         try {
-            await axios.post("http://localhost:5000/api/contact", {
+            await axios.post("https://mern-540-backend.onrender.com/api/contact", {
                 name,
                 email,
                 message,

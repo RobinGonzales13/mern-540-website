@@ -33,7 +33,7 @@ const AdminDashboard = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/posts");
+            const response = await axios.get("https://mern-540-backend.onrender.com/api/posts");
             setPosts(response.data);
         } catch (error) {
             console.error("Error fetching posts:", error);
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
         images.forEach(image => formData.append("images", image));
     
         try {
-            await axios.post("http://localhost:5000/api/posts/create", formData, {
+            await axios.post("https://mern-540-backend.onrender.com/api/posts/create", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
     
@@ -111,7 +111,7 @@ const AdminDashboard = () => {
         }
     
         try {
-            await axios.put(`http://localhost:5000/api/posts/${postId}`, formData, {
+            await axios.put(`https://mern-540-backend.onrender.com/api/posts/${postId}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
     
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/posts/${id}`);
+            await axios.delete(`https://mern-540-backend.onrender.com/api/posts/${id}`);
             alert("Post deleted successfully!");
             fetchPosts();
         } catch (error) {
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
                                     <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} navigation pagination={{ clickable: true }}>
                                         {post.images.map((img, index) => (
                                             <SwiperSlide key={index}>
-                                                <Image src={`http://localhost:5000${img}`} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
+                                                <Image src={`https://mern-540-backend.onrender.com${img}`} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
                                             </SwiperSlide>
                                         ))}
                                     </Swiper>

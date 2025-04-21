@@ -24,7 +24,7 @@ export default function Navbar({ showContactButton = true }) {
       }
 
       try {
-          const response = await axios.post("http://localhost:5000/api/contact", {
+          const response = await axios.post("https://mern-540-backend.onrender.com/api/contact", {
               name,
               email,
               message,
