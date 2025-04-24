@@ -7,11 +7,11 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "lint": "eslint .",
-  "preview": "vite preview",
-  "postinstall": "npm install vite"
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "postinstall": "npm install vite"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
