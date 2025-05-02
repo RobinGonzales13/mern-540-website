@@ -66,7 +66,8 @@ const HomePage = () => {
         top={0}
         left={0}
         right={0}
-        height={{ base: "auto", md: "50vh" }}
+        height="100vh"
+        overflow="hidden"
         zIndex={0}
       >
         <video
@@ -75,13 +76,10 @@ const HomePage = () => {
           muted
           playsInline
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
             width: "100%",
             height: "100%",
-            objectFit: "contain",
-            objectPosition: "top",
+            objectFit: "cover",
+            objectPosition: "center",
           }}
         >
           <source src="/homepage-bg.mp4" type="video/mp4" />
