@@ -81,6 +81,7 @@ const HomePage = () => {
             width: "100%",
             height: "100%",
             objectFit: "cover",
+            objectPosition: "top",
           }}
         >
           <source src="/homepage-bg.mp4" type="video/mp4" />
