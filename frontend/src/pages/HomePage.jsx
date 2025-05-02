@@ -60,23 +60,33 @@ const HomePage = () => {
         pointerEvents: "none"
       }}
     >
-      {/* Background Image Layer */}
+      {/* Background Video Layer */}
       <Box
         position="absolute"
         top={0}
         left={0}
         right={0}
         bottom={0}
-          backgroundImage={{
-          base: "",
-          md: ""
-        }}
-        
-        backgroundSize="100% auto"
-        backgroundPosition="center top"
-        backgroundRepeat="no-repeat"
         zIndex={0}
-      />
+      >
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        >
+          <source src="/homepage-bg.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </Box>
       
       <Navbar showContactButton={true} />
 
