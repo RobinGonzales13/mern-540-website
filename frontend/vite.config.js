@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  "process.env": process.env,
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -23,4 +22,9 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
+  preview: {
+    port: 3000,
+    host: true,
+    allowedHosts: ['five40airbasegroup-paf-frontend.onrender.com']
+  }
 })
