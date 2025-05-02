@@ -16,9 +16,10 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Adjusting for both dev (localhost) and prod (Render)
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mern-540-website.vercel.app" // Frontend on Vercel
+  "http://localhost:5173",  // Localhost for dev
+  "https://five40airbasegroup-paf-frontend.onrender.com", // Render Frontend URL
 ];
 
 app.use(cors({
@@ -28,7 +29,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-app.use(express.json()); 
+app.use(express.json());
 app.use(cookieParser());
 app.use("/uploads", express.static("uploads"));
 
