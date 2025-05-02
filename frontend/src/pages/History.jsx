@@ -85,7 +85,7 @@ const History = () => {
               controls
               style={{ objectFit: "cover" }}
             >
-              <source src="https://540-website.b-cdn.net/history.mp4" type="video/mp4" />
+              <source src="" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </Box>
