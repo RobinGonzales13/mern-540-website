@@ -1,11 +1,4 @@
 import BlogPost from "../models/blogPost.model.js";
-import cloudinary from "cloudinary";
-
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.CLOUD_API_KEY,
-    api_secret: process.env.CLOUD_API_SECRET,
-});
 
 export const createPost = async (req, res) => {
     try {
@@ -18,11 +11,7 @@ export const createPost = async (req, res) => {
             return res.status(400).json({ success: false, message: "Title and content are required!" });
         }
 
-        const imageUrls = [];
-        for (let file of req.files) {
-            const result = await cloudinary.uploader.upload(file.path);
-            imageUrls.push(result.secure_url);
-        }
+        const imageUrls = req.files.map(file => file.path);
 
         const newPost = new BlogPost({ title, content, images: imageUrls });
         await newPost.save();
@@ -37,13 +26,7 @@ export const createPost = async (req, res) => {
 export const getPosts = async (req, res) => {
     try {
         const posts = await BlogPost.find().sort({ createdAt: -1 });
-
-        const formattedPosts = posts.map(post => ({
-            ...post.toObject(),
-            images: post.images || []
-        }));
-
-        res.status(200).json(formattedPosts);
+        res.status(200).json(posts);
     } catch (error) {
         console.error("Error fetching posts:", error);
         res.status(500).json({ success: false, message: "Server error" });
@@ -63,17 +46,11 @@ export const updatePost = async (req, res) => {
         let updatedFields = { title, content };
 
         if (req.files && req.files.length > 0) {
-            const imageUrls = [];
-            for (let file of req.files) {
-                const result = await cloudinary.uploader.upload(file.path);
-                imageUrls.push(result.secure_url);
-            }
-
+            const imageUrls = req.files.map(file => file.path);
             updatedFields.images = imageUrls;
         }
 
         const updatedPost = await BlogPost.findByIdAndUpdate(id, updatedFields, { new: true });
-
         res.json({ success: true, message: "Post updated successfully", updatedPost });
     } catch (error) {
         console.error("Error updating post:", error);

@@ -63,6 +63,11 @@ const AdminDashboard = () => {
             alert("Please select at least one image!");
             return;
         }
+
+        if (!title || !content) {
+            alert("Please provide both title and content!");
+            return;
+        }
     
         const formData = new FormData();
         formData.append("title", title);
@@ -70,18 +75,26 @@ const AdminDashboard = () => {
         images.forEach(image => formData.append("images", image));
     
         try {
-            await axios.post(`${API_URL}/api/posts/create`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+            const response = await axios.post(`${API_URL}/api/posts/create`, formData, {
+                headers: { 
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
             });
     
-            alert("Post created successfully!");
-            setTitle("");
-            setContent("");
-            setImages([]);
-            setPreviews([]);
-            fetchPosts();
+            if (response.data.success) {
+                alert("Post created successfully!");
+                setTitle("");
+                setContent("");
+                setImages([]);
+                setPreviews([]);
+                fetchPosts();
+            } else {
+                alert(response.data.message || "Error creating post");
+            }
         } catch (error) {
-            alert("Error uploading post");
+            console.error("Error uploading post:", error);
+            alert(error.response?.data?.message || "Error uploading post. Please try again.");
         }
     };
 
