@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "postinstall": "npm install vite",
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist",
     "prebuild": "npm run clean"
   },
   "dependencies": {
