@@ -11,7 +11,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "npm install vite"
+    "postinstall": "npm install vite",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
