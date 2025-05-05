@@ -12,7 +12,7 @@ import axios from "axios";
 import Navbar from '../components/ui/navbar';
 import Footer from "../components/ui/Footer";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://mern-540-backend.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://five40airbasegroup-paf-backend.onrender.com";
 
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
