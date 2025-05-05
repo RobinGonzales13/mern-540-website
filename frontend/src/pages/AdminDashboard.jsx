@@ -8,6 +8,8 @@ import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://five40airbasegroup-paf-backend.onrender.com";
+
 const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -195,7 +197,7 @@ const AdminDashboard = () => {
                                     <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} navigation pagination={{ clickable: true }}>
                                         {post.images.map((img, index) => (
                                             <SwiperSlide key={index}>
-                                                <Image src={`https://mern-540-backend.onrender.com${img}`} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
+                                                <Image src={`${API_URL}${img}`} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
                                             </SwiperSlide>
                                         ))}
                                     </Swiper>

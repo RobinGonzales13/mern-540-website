@@ -157,7 +157,7 @@ const HomePage = () => {
         {/* Main Content Section */}
         <GridItem area="main" bg="white" mx="auto" mt={10} mb={10} w={{ base: "90%", md: "600px" }}>
           <VStack spacing={6} p={6}>
-              <Heading fontSize="2xl">Latest Blog Posts</Heading>
+              <Heading fontSize="2xl">Latest Posts</Heading>
               {posts.length === 0 ? (
                   <Text>No posts available</Text>
                   ) : (
@@ -176,7 +176,7 @@ const HomePage = () => {
                               {post.images.map((img, index) => (
                                   <SwiperSlide key={index}>
                                       <Image 
-                                          src={`https://mern-540-backend.onrender.com${img}`} 
+                                          src={`${API_URL}${img}`} 
                                           alt={`Slide ${index}`} 
                                           boxSize="100%" 
                                           objectFit="cover"
