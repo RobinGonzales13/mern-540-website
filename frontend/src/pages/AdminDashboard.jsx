@@ -210,7 +210,7 @@ const AdminDashboard = () => {
                                     <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} navigation pagination={{ clickable: true }}>
                                         {post.images.map((img, index) => (
                                             <SwiperSlide key={index}>
-                                                <Image src={`${API_URL}${img}`} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
+                                                <Image src={img} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
                                             </SwiperSlide>
                                         ))}
                                     </Swiper>
