@@ -48,9 +48,9 @@ const AdminLogin = () => {
         setLoading(true);
         setError("");
         try {
-            const response = await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
+            const response = await axios.post(`${API_URL}/api/auth/request-password-reset`, { email });
             alert(response.data.message);
-            setStep(2); // Move to OTP verification step
+            setStep(4); // Move to OTP and new password step
         } catch (error) {
             setError(error.response?.data?.message || "Failed to send password reset email");
         }
