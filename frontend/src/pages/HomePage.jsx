@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, VStack, Text, Grid, GridItem, Image, Heading, Divider, Button } from "@chakra-ui/react";
+import { Box, VStack, Text, Grid, GridItem, Image, Heading, Divider, Button, Spinner, useToast, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -17,18 +17,33 @@ const API_URL = import.meta.env.VITE_API_URL || "https://five40airbasegroup-paf-
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [expandedPosts, setExpandedPosts] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const toast = useToast();
 
   useEffect(() => {
       const fetchPosts = async () => {
           try {
+              setLoading(true);
+              setError(null);
               const response = await axios.get(`${API_URL}/api/posts`);
               setPosts(response.data);
           } catch (error) {
               console.error("Error fetching posts:", error);
+              setError("Failed to load posts. Please try again later.");
+              toast({
+                  title: "Error",
+                  description: "Failed to load posts. Please try again later.",
+                  status: "error",
+                  duration: 5000,
+                  isClosable: true,
+              });
+          } finally {
+              setLoading(false);
           }
       };
       fetchPosts();
-  }, []);
+  }, [toast]);
 
   const togglePostExpansion = (postId) => {
     setExpandedPosts(prev => ({
@@ -158,56 +173,79 @@ const HomePage = () => {
         <GridItem area="main" bg="white" mx="auto" mt={10} mb={10} w={{ base: "90%", md: "600px" }}>
           <VStack spacing={6} p={6}>
               <Heading fontSize="2xl">Latest Posts</Heading>
-              {posts.length === 0 ? (
-                  <Text>No posts available</Text>
-                  ) : (
-                    posts.map((post) => (
-                      <Box key={post._id} p={4} borderWidth="1px" borderRadius="lg" w="100%" position="relative">
-                          <Swiper
-                              modules={[Navigation, Pagination, Autoplay]}
-                              spaceBetween={10}
-                              slidesPerView={1}
-                              navigation
-                              pagination={{ clickable: true }}
-                              autoplay={{ delay: 5000, disableOnInteraction: false }}
-                              loop={true}
-                              style={{ width: "100%", height: "100%" }}
-                          >
-                              {post.images.map((img, index) => (
-                                  <SwiperSlide key={index}>
-                                      <Image 
-                                          src={img} 
-                                          alt={`Slide ${index}`} 
-                                          boxSize="100%" 
-                                          objectFit="cover"
-                                      />
-                                  </SwiperSlide>
-                              ))}
-                          </Swiper>
-                  
-                          <Text fontSize="xl" fontWeight="bold" mt={2}>{post.title}</Text>
-                          <Text>
-                            {expandedPosts[post._id] ? post.content : truncateText(post.content)}
-                          </Text>
-                          {post.content.length > 250 && (
-                            <Button
-                              size="sm"
-                              colorScheme="blue"
-                              variant="ghost"
-                              onClick={() => togglePostExpansion(post._id)}
-                              mt={2}
-                            >
-                              {expandedPosts[post._id] ? "Show Less" : "Read More"}
-                            </Button>
-                          )}
-
-                          {post.createdAt && (
-                              <Text fontSize="sm" color="gray.500" position="absolute" bottom={2} right={2}>
-                                  {format(new Date(post.createdAt), "MMMM d, yyyy")}
-                              </Text>
-                          )}
-                      </Box>
-                  ))
+              {loading ? (
+                  <Box textAlign="center" py={10}>
+                      <Spinner size="xl" />
+                      <Text mt={4}>Loading posts...</Text>
+                  </Box>
+              ) : error ? (
+                  <Alert status="error">
+                      <AlertIcon />
+                      <AlertTitle>Error Loading Posts</AlertTitle>
+                      <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+              ) : posts.length === 0 ? (
+                  <Alert status="info">
+                      <AlertIcon />
+                      <AlertTitle>No Posts Available</AlertTitle>
+                      <AlertDescription>Check back later for updates.</AlertDescription>
+                  </Alert>
+              ) : (
+                posts.map((post) => (
+                  <Box 
+                    key={post._id} 
+                    p={4} 
+                    borderWidth="1px" 
+                    borderRadius="lg" 
+                    w="100%" 
+                    position="relative"
+                    boxShadow="sm"
+                    _hover={{ boxShadow: "md" }}
+                    transition="all 0.2s"
+                  >
+                      <Swiper
+                          modules={[Navigation, Pagination, Autoplay]}
+                          spaceBetween={10}
+                          slidesPerView={1}
+                          navigation
+                          pagination={{ clickable: true }}
+                          autoplay={{ delay: 5000, disableOnInteraction: false }}
+                          loop={true}
+                          style={{ width: "100%", height: "100%" }}
+                      >
+                          {post.images.map((img, index) => (
+                              <SwiperSlide key={index}>
+                                  <Image 
+                                      src={img} 
+                                      alt={`Slide ${index}`} 
+                                      boxSize="100%" 
+                                      objectFit="cover"
+                                      fallbackSrc="/placeholder-image.jpg"
+                                  />
+                              </SwiperSlide>
+                          ))}
+                      </Swiper>
+              
+                      <Text fontSize="xl" fontWeight="bold" mt={2}>{post.title}</Text>
+                      <Text color="gray.600" fontSize="sm" mb={2}>
+                          {format(new Date(post.createdAt), 'PPP')}
+                      </Text>
+                      <Text>
+                        {expandedPosts[post._id] ? post.content : truncateText(post.content)}
+                      </Text>
+                      {post.content.length > 250 && (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          variant="ghost"
+                          onClick={() => togglePostExpansion(post._id)}
+                          mt={2}
+                        >
+                          {expandedPosts[post._id] ? "Show Less" : "Read More"}
+                        </Button>
+                      )}
+                  </Box>
+                ))
               )}
           </VStack>
         </GridItem>
@@ -228,7 +266,7 @@ const HomePage = () => {
           alignSelf="flex-start"
         >
           <Box w="100%" h="auto" position="relative">
-            <Link to="/pol-home" style={{ display: "block", width: "100%" }}>
+            <Link to="/pol-login" style={{ display: "block", width: "100%" }}>
               <Image 
                 src="/pol.jpg" 
                 alt="POL Dump Image" 

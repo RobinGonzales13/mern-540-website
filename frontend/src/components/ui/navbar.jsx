@@ -10,12 +10,15 @@ import { useState } from 'react';
 import axios from 'axios';
 import ContactUs from "./ContactUs";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Navbar({ showContactButton = true }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
       if (!name || !email || !message) {
@@ -23,8 +26,9 @@ export default function Navbar({ showContactButton = true }) {
           return;
       }
 
+      setIsSubmitting(true);
       try {
-          const response = await axios.post("https://mern-540-backend.onrender.com/api/contact", {
+          const response = await axios.post(`${API_URL}/api/contact`, {
               name,
               email,
               message,
@@ -35,12 +39,15 @@ export default function Navbar({ showContactButton = true }) {
               setName("");
               setEmail("");
               setMessage("");
-              closeContact();
+              closeModal();
           } else {
               alert("Error sending message.");
           }
       } catch (error) {
+          console.error("Contact form error:", error);
           alert("Failed to send message. Try again later.");
+      } finally {
+          setIsSubmitting(false);
       }
   };
 

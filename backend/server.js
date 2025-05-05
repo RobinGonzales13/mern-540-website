@@ -6,39 +6,63 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.route.js"; 
 import blogPostRoutes from "./routes/blogPost.route.js";
 import contactRoutes from "./routes/contact.route.js";
-import path from "path";
-import { fileURLToPath } from "url";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Security middleware
+app.use(helmet());
+app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
 
-// Adjusting for both dev (localhost) and prod (Render)
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// CORS configuration
 const allowedOrigins = [
-  "http://localhost:5173",  // Localhost for dev
-  "https://five40airbasegroup-paf-frontend.onrender.com", // Render Frontend URL
+    "http://localhost:5173",
+    "https://five40airbasegroup-paf-frontend.onrender.com",
+    "https://five40airbasegroup-paf-backend.onrender.com"
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-app.use(express.json());
-app.use(cookieParser());
-app.use("/uploads", express.static("uploads"));
-
+// Routes
 app.use("/api/auth", authRoutes); 
 app.use("/api/posts", blogPostRoutes);
 app.use("/api/contact", contactRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ 
+        success: false, 
+        message: 'Something went wrong!',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
+// Connect to database
 connectDB();
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`✅ Server running on http://localhost:${PORT}`);
 });

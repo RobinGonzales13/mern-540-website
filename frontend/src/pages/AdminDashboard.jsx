@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Spinner, Text, Flex, Image, VStack, Heading, Input, Textarea } from "@chakra-ui/react";
+import { Box, Button, Spinner, Text, Flex, Image, VStack, Heading, Input, Textarea, useToast, FormControl, FormLabel, FormErrorMessage, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { format } from "date-fns"; 
 import "swiper/css";
@@ -23,7 +23,8 @@ const AdminDashboard = () => {
     const [updatedContent, setUpdatedContent] = useState("");
     const [newImages, setNewImages] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
-
+    const [errors, setErrors] = useState({});
+    const toast = useToast();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -40,33 +41,44 @@ const AdminDashboard = () => {
             setPosts(response.data);
         } catch (error) {
             console.error("Error fetching posts:", error);
+            toast({
+                title: "Error",
+                description: "Failed to fetch posts. Please try again later.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!title.trim()) newErrors.title = "Title is required";
+        if (!content.trim()) newErrors.content = "Content is required";
+        if (images.length === 0) newErrors.images = "At least one image is required";
+        if (images.length > 10) newErrors.images = "Maximum 10 images allowed";
+        return newErrors;
     };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
+        setErrors({});
     
         if (files.length > 10) {
-            alert("You can only upload up to 10 images!");
+            setErrors({ images: "You can only upload up to 10 images!" });
             return;
         }
     
         setImages(files);
-    
         const previewUrls = files.map(file => URL.createObjectURL(file));
         setPreviews(previewUrls);
     };   
 
     const handleUpload = async (e) => {
         e.preventDefault();
-    
-        if (images.length === 0) {
-            alert("Please select at least one image!");
-            return;
-        }
-
-        if (!title || !content) {
-            alert("Please provide both title and content!");
+        const formErrors = validateForm();
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
             return;
         }
 
@@ -86,18 +98,29 @@ const AdminDashboard = () => {
             });
     
             if (response.data.success) {
-                alert("Post created successfully!");
+                toast({
+                    title: "Success",
+                    description: "Post created successfully!",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                });
                 setTitle("");
                 setContent("");
                 setImages([]);
                 setPreviews([]);
+                setErrors({});
                 fetchPosts();
-            } else {
-                alert(response.data.message || "Error creating post");
             }
         } catch (error) {
             console.error("Error uploading post:", error);
-            alert(error.response?.data?.message || "Error uploading post. Please try again.");
+            toast({
+                title: "Error",
+                description: error.response?.data?.message || "Error uploading post. Please try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         } finally {
             setIsUploading(false);
         }
@@ -108,13 +131,15 @@ const AdminDashboard = () => {
         setUpdatedTitle(post.title);
         setUpdatedContent(post.content);
         setNewImages([]);
+        setErrors({});
     };
 
     const handleNewImageChange = (e) => {
         const files = Array.from(e.target.files);
+        setErrors({});
         
         if (files.length > 10) {
-            alert("You can only upload up to 10 images!");
+            setErrors({ newImages: "You can only upload up to 10 images!" });
             return;
         }
 
@@ -122,6 +147,14 @@ const AdminDashboard = () => {
     };
 
     const handleSaveEdit = async (postId) => {
+        const formErrors = {};
+        if (!updatedTitle.trim()) formErrors.updatedTitle = "Title is required";
+        if (!updatedContent.trim()) formErrors.updatedContent = "Content is required";
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+
         const formData = new FormData();
         formData.append("title", updatedTitle);
         formData.append("content", updatedContent);
@@ -132,25 +165,62 @@ const AdminDashboard = () => {
     
         try {
             await axios.put(`${API_URL}/api/posts/${postId}`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { 
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
             });
     
-            alert("Post updated successfully!");
+            toast({
+                title: "Success",
+                description: "Post updated successfully!",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             setEditingPost(null);
+            setErrors({});
             fetchPosts();
         } catch (error) {
             console.error("Error updating post:", error);
-            alert("Error updating post");
+            toast({
+                title: "Error",
+                description: error.response?.data?.message || "Error updating post. Please try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
     const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this post?")) {
+            return;
+        }
+
         try {
-            await axios.delete(`${API_URL}/api/posts/${id}`);
-            alert("Post deleted successfully!");
+            await axios.delete(`${API_URL}/api/posts/${id}`, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+            toast({
+                title: "Success",
+                description: "Post deleted successfully!",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             fetchPosts();
         } catch (error) {
-            alert("Error deleting post");
+            console.error("Error deleting post:", error);
+            toast({
+                title: "Error",
+                description: error.response?.data?.message || "Error deleting post. Please try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
@@ -160,7 +230,24 @@ const AdminDashboard = () => {
     };
 
     if (loading) {
-        return <Box textAlign="center" mt={10}><Spinner size="xl" /></Box>;
+        return (
+            <Box textAlign="center" mt={10}>
+                <Spinner size="xl" />
+                <Text mt={4}>Loading dashboard...</Text>
+            </Box>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <Alert status="error">
+                <AlertIcon />
+                <AlertTitle>Unauthorized Access</AlertTitle>
+                <AlertDescription>
+                    Please log in to access the admin dashboard.
+                </AlertDescription>
+            </Alert>
+        );
     }
 
     return (
@@ -178,85 +265,173 @@ const AdminDashboard = () => {
             <Box p={6}>
                 <Heading mb={4}>Create a New Post</Heading>
                 <VStack spacing={4} align="start">
-                    <Box 
-                        bg="yellow.100" 
-                        border="1px solid" 
-                        borderColor="yellow.400" 
-                        borderRadius="md" 
-                        p={3} 
-                        mb={4} 
-                        textAlign="center"
-                    >
-                        <Text fontSize="sm" color="yellow.700" fontWeight="bold">
-                            Recommended image resolution is **1200x800px**. 
-                            You can upload up to **10 images** per post.
-                        </Text>
-                    </Box>
+                    <Alert status="info" variant="subtle">
+                        <AlertIcon />
+                        <Box>
+                            <AlertTitle>Image Guidelines</AlertTitle>
+                            <AlertDescription>
+                                Recommended image resolution is 1200x800px. You can upload up to 10 images per post.
+                            </AlertDescription>
+                        </Box>
+                    </Alert>
 
-                    <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <Textarea placeholder="Content" value={content} onChange={(e) => setContent(e.target.value)} />
-                    <Input type="file" accept="image/*" multiple onChange={handleImageChange} />
-                    {previews.length > 0 && previews.map((src, index) => (
-                        <Image key={index} src={src} alt={`Preview ${index}`} boxSize="100px" />
-                    ))}
+                    <FormControl isInvalid={errors.title}>
+                        <FormLabel>Title</FormLabel>
+                        <Input 
+                            placeholder="Enter post title" 
+                            value={title} 
+                            onChange={(e) => setTitle(e.target.value)} 
+                        />
+                        <FormErrorMessage>{errors.title}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={errors.content}>
+                        <FormLabel>Content</FormLabel>
+                        <Textarea 
+                            placeholder="Enter post content" 
+                            value={content} 
+                            onChange={(e) => setContent(e.target.value)} 
+                        />
+                        <FormErrorMessage>{errors.content}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={errors.images}>
+                        <FormLabel>Images</FormLabel>
+                        <Input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            onChange={handleImageChange} 
+                        />
+                        <FormErrorMessage>{errors.images}</FormErrorMessage>
+                    </FormControl>
+
+                    {previews.length > 0 && (
+                        <Flex wrap="wrap" gap={2}>
+                            {previews.map((src, index) => (
+                                <Image 
+                                    key={index} 
+                                    src={src} 
+                                    alt={`Preview ${index}`} 
+                                    boxSize="100px" 
+                                    objectFit="cover"
+                                />
+                            ))}
+                        </Flex>
+                    )}
+
                     <Button 
                         colorScheme="blue" 
-                        onClick={handleUpload}
+                        onClick={handleUpload} 
                         isLoading={isUploading}
                         loadingText="Uploading..."
-                        disabled={isUploading}
+                        w="100%"
                     >
-                        Submit
+                        Create Post
                     </Button>
                 </VStack>
-            </Box>
 
-            <Box p={6} display="flex" flexDirection="column" alignItems="center" textAlign="center">
-                <Heading mb={4}>Manage Posts</Heading>
-                <VStack spacing={6} align="center" w={{ base: "90%", md: "33.33%" }}>
-                    {posts.length === 0 ? (
-                        <Text>No posts available</Text>
-                    ) : (
-                        posts.map((post) => (
-                            <Box key={post._id} p={4} borderWidth="1px" borderRadius="lg" w="100%" textAlign="center" position="relative">
-                                {post.images && post.images.length > 0 ? (
-                                    <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} navigation pagination={{ clickable: true }}>
-                                        {post.images.map((img, index) => (
+                <Heading mt={8} mb={4}>Manage Posts</Heading>
+                <VStack spacing={4}>
+                    {posts.map((post) => (
+                        <Box 
+                            key={post._id} 
+                            bg="white" 
+                            p={4} 
+                            borderRadius="md" 
+                            boxShadow="sm" 
+                            w="100%"
+                        >
+                            {editingPost === post._id ? (
+                                <VStack spacing={4} align="start">
+                                    <FormControl isInvalid={errors.updatedTitle}>
+                                        <FormLabel>Title</FormLabel>
+                                        <Input 
+                                            value={updatedTitle} 
+                                            onChange={(e) => setUpdatedTitle(e.target.value)} 
+                                        />
+                                        <FormErrorMessage>{errors.updatedTitle}</FormErrorMessage>
+                                    </FormControl>
+
+                                    <FormControl isInvalid={errors.updatedContent}>
+                                        <FormLabel>Content</FormLabel>
+                                        <Textarea 
+                                            value={updatedContent} 
+                                            onChange={(e) => setUpdatedContent(e.target.value)} 
+                                        />
+                                        <FormErrorMessage>{errors.updatedContent}</FormErrorMessage>
+                                    </FormControl>
+
+                                    <FormControl isInvalid={errors.newImages}>
+                                        <FormLabel>Add New Images</FormLabel>
+                                        <Input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            multiple 
+                                            onChange={handleNewImageChange} 
+                                        />
+                                        <FormErrorMessage>{errors.newImages}</FormErrorMessage>
+                                    </FormControl>
+
+                                    <Flex gap={2}>
+                                        <Button 
+                                            colorScheme="green" 
+                                            onClick={() => handleSaveEdit(post._id)}
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button 
+                                            colorScheme="gray" 
+                                            onClick={() => setEditingPost(null)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Flex>
+                                </VStack>
+                            ) : (
+                                <>
+                                    <Text fontSize="xl" fontWeight="bold">{post.title}</Text>
+                                    <Text>{post.content}</Text>
+                                    <Text fontSize="sm" color="gray.500">
+                                        Created: {format(new Date(post.createdAt), 'PPP')}
+                                    </Text>
+                                    <Swiper
+                                        modules={[Navigation, Pagination]}
+                                        navigation
+                                        pagination={{ clickable: true }}
+                                        spaceBetween={30}
+                                        slidesPerView={1}
+                                    >
+                                        {post.images.map((image, index) => (
                                             <SwiperSlide key={index}>
-                                                <Image src={img} alt={`Slide ${index}`} boxSize="100%" objectFit="cover" />
+                                                <Image 
+                                                    src={image} 
+                                                    alt={`Post image ${index}`} 
+                                                    w="100%" 
+                                                    h="300px" 
+                                                    objectFit="cover"
+                                                />
                                             </SwiperSlide>
                                         ))}
                                     </Swiper>
-                                ) : (
-                                    <Text>No images available</Text>
-                                )}
-
-                                {editingPost === post._id ? (
-                                    <>
-                                        <Input value={updatedTitle} onChange={(e) => setUpdatedTitle(e.target.value)} />
-                                        <Textarea value={updatedContent} onChange={(e) => setUpdatedContent(e.target.value)} />
-                                        <Input type="file" multiple accept="image/*" onChange={handleNewImageChange} />
-                                        <Button colorScheme="green" onClick={() => handleSaveEdit(post._id)}>Save</Button>
-                                        <Button colorScheme="gray" onClick={() => setEditingPost(null)}>Cancel</Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Text fontSize="xl" fontWeight="bold" mt={2}>{post.title}</Text>
-                                        <Text>{post.content}</Text>
-
-                                        {post.createdAt && (
-                                            <Text fontSize="sm" color="gray.500" position="absolute" bottom={2} right={2}>
-                                                {format(new Date(post.createdAt), "MMMM d, yyyy")}
-                                            </Text>
-                                        )}
-
-                                        <Button colorScheme="blue" mt={2} onClick={() => handleEdit(post)}>Edit</Button>
-                                        <Button colorScheme="red" mt={2} onClick={() => handleDelete(post._id)}>Delete</Button>
-                                    </>
-                                )}
-                            </Box>
-                        ))
-                    )}
+                                    <Flex gap={2} mt={4}>
+                                        <Button 
+                                            colorScheme="blue" 
+                                            onClick={() => handleEdit(post)}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button 
+                                            colorScheme="red" 
+                                            onClick={() => handleDelete(post._id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Flex>
+                                </>
+                            )}
+                        </Box>
+                    ))}
                 </VStack>
             </Box>
         </Box>

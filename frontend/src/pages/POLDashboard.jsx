@@ -1,126 +1,153 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Spinner, Text, Flex, Image, VStack, Heading, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, VStack, HStack, Spinner, Image, Flex, Spacer } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import logo from "../assets/gas-logo.png";
+import inventoryIcon from "../assets/inventory-logo.png";
+import groundFuelIcon from "../assets/gfr-logo.png";
+import jetFuelIcon from "../assets/jfr-logo.png";
+import gasSlipIcon from "../assets/gsr-logo.png";
+import Inventory from "../components/Inventory";
+import GroundFuelReport from "../components/GroundFuelReport";
+import JetFuelReport from "../components/JetFuelReport";
+
 const POLDashboard = () => {
-    const [activeTab, setActiveTab] = useState("Inventory");
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [inventory, setInventory] = useState([]);
-    const [groundFuel, setGroundFuel] = useState([]);
-    const [jetFuel, setJetFuel] = useState([]);
-    const [records, setRecords] = useState([]);
+    const [selectedTab, setSelectedTab] = useState("Inventory");
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        const fetchUser = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
 
-    const fetchData = async () => {
-        try {
-            const [invRes, groundRes, jetRes, recRes] = await Promise.all([
-                axios.get("https://mern-540-backend.onrender.com/api/inventory"),
-                axios.get("https://mern-540-backend.onrender.com/api/ground-fuel"),
-                axios.get("https://mern-540-backend.onrender.com/api/jet-fuel"),
-                axios.get("https://mern-540-backend.onrender.com/api/records")
-            ]);
-            setInventory(invRes.data);
-            setGroundFuel(groundRes.data);
-            setJetFuel(jetRes.data);
-            setRecords(recRes.data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setLoading(false);
+            try {
+                const res = await axios.get("http://localhost:5000/api/auth/user", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setUser(res.data.user);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+                navigate("/login");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, [navigate]);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
+    if (loading) {
+        return <Spinner size="xl" mt="50px" />;
+    }
+
+    const renderContent = () => {
+        switch (selectedTab) {
+            case "Inventory":
+                return <Text fontSize="lg">Inventory Content Here</Text>;
+            case "Ground Fuel Report":
+                return <Text fontSize="lg">Ground Fuel Report Content Here</Text>;
+            case "Jet Fuel Report":
+                return <Text fontSize="lg">Jet Fuel Report Content Here</Text>;
+            case "Gas Slip Records":
+                return <Text fontSize="lg">Gas Slip Records Content Here</Text>;
+            default:
+                return <Text fontSize="lg">Select an option from the left navigation.</Text>;
         }
     };
 
-    const handleLogout = () => {
-        navigate("/pol-home");
-    };
-
-    const tabs = ["Inventory", "Ground Fuel Report", "Jet Fuel Report", "Gas Slip Records"];
-
     return (
-        <Box minH="100vh" display="flex" bg="gray.100">
-            {/* Sidebar Tabs */}
-            <VStack
-                w="250px"
-                bg="white"
-                p={4}
-                boxShadow="md"
-                align="stretch"
-            >
-                <Flex align="center" mb={4}>
-                    <Image src="/logo.png" alt="Logo" boxSize="40px" mr={2} />
-                    <Heading size="md">POL Dashboard</Heading>
+        <Box h="100vh">
+            <Box bg="blue.700" px={6} py={4} color="white" w="100%">
+                <Flex align="center">
+                    <Image src={logo} alt="Logo" boxSize="40px" mr={3} />
+                    <Heading fontSize="xl">POL Dump Inventory System</Heading>
+
+                    <Spacer />
+
+                    <HStack spacing={4}>
+                        <Text>{user?.email || "Admin"}</Text>
+                        <Button colorScheme="red" onClick={handleLogout}>Logout</Button>
+                    </HStack>
                 </Flex>
-                {tabs.map((tab) => (
-                    <Button
-                        key={tab}
-                        variant={activeTab === tab ? "solid" : "outline"}
-                        colorScheme="blue"
-                        onClick={() => setActiveTab(tab)}
-                    >
-                        {tab}
-                    </Button>
-                ))}
-                <Box mt="auto" w="100%">
-                    <Button
-                        variant="solid"
-                        colorScheme="red"
-                        w="100%"
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </Button>
+            </Box>
+
+            <Box display="flex" flex="1">
+                <Box bg="gray.800" color="white" w="250px" p={6} h="auto" minH="100vh">
+                    <VStack spacing={4} align="stretch">
+                        <Button
+                            leftIcon={
+                                <Image 
+                                    src={inventoryIcon} 
+                                    boxSize="20px" 
+                                    filter={selectedTab === "Inventory" ? "invert(1)" : "none"} 
+                                />
+                            }  colorScheme={selectedTab === "Inventory" ? "blue" : "gray"} onClick={() => setSelectedTab("Inventory")}>
+                            Inventory
+                        </Button>
+
+                        <Button 
+                            leftIcon={
+                                <Image 
+                                    src={groundFuelIcon} 
+                                    boxSize="20px" 
+                                    filter={selectedTab === "Ground Fuel Report" ? "invert(1)" : "none"} 
+                                />
+                            } 
+                            colorScheme={selectedTab === "Ground Fuel Report" ? "blue" : "gray"} 
+                            variant="solid" 
+                            onClick={() => setSelectedTab("Ground Fuel Report")}
+                        >
+                            Ground Fuel Report
+                        </Button>
+
+                        <Button 
+                            leftIcon={
+                                <Image 
+                                    src={jetFuelIcon} 
+                                    boxSize="20px" 
+                                    filter={selectedTab === "Jet Fuel Report" ? "invert(1)" : "none"} 
+                                />
+                            } 
+                            colorScheme={selectedTab === "Jet Fuel Report" ? "blue" : "gray"} 
+                            variant="solid" 
+                            onClick={() => setSelectedTab("Jet Fuel Report")}
+                        >
+                            Jet Fuel Report
+                        </Button>
+
+                        <Button 
+                            leftIcon={
+                                <Image 
+                                    src={gasSlipIcon} 
+                                    boxSize="20px" 
+                                    filter={selectedTab === "Gas Slip Records" ? "invert(1)" : "none"} 
+                                />
+                            } 
+                            colorScheme={selectedTab === "Gas Slip Records" ? "blue" : "gray"} 
+                            variant="solid" 
+                            onClick={() => setSelectedTab("Gas Slip Records")}
+                        >
+                            Gas Slip Records
+                        </Button>
+                    </VStack>
                 </Box>
-            </VStack>
-            
-            {/* Main Content */}
-            <Box flex={1} p={6}>
-                <Heading size="lg" mb={4}>{activeTab}</Heading>
-                {loading ? (
-                    <Spinner size="xl" />
-                ) : (
-                    <>
-                        {activeTab === "Inventory" && (
-                            <Table variant="simple" bg="white" boxShadow="md" borderRadius="md">
-                                <Thead><Tr><Th>Item</Th><Th>Quantity</Th></Tr></Thead>
-                                <Tbody>{inventory.map((item) => (
-                                    <Tr key={item._id}><Td>{item.name}</Td><Td>{item.quantity}</Td></Tr>
-                                ))}</Tbody>
-                            </Table>
-                        )}
 
-                        {activeTab === "Ground Fuel Report" && (
-                            <Table variant="simple" bg="white" boxShadow="md" borderRadius="md">
-                                <Thead><Tr><Th>Date</Th><Th>Consumption (L)</Th></Tr></Thead>
-                                <Tbody>{groundFuel.map((entry) => (
-                                    <Tr key={entry._id}><Td>{entry.date}</Td><Td>{entry.amount}</Td></Tr>
-                                ))}</Tbody>
-                            </Table>
-                        )}
-
-                        {activeTab === "Jet Fuel Report" && (
-                            <Table variant="simple" bg="white" boxShadow="md" borderRadius="md">
-                                <Thead><Tr><Th>Date</Th><Th>Consumption (L)</Th></Tr></Thead>
-                                <Tbody>{jetFuel.map((entry) => (
-                                    <Tr key={entry._id}><Td>{entry.date}</Td><Td>{entry.amount}</Td></Tr>
-                                ))}</Tbody>
-                            </Table>
-                        )}
-
-                        {activeTab === "Gas Slip Records" && (
-                            <Table variant="simple" bg="white" boxShadow="md" borderRadius="md">
-                                <Thead><Tr><Th>QR Code</Th><Th>Date</Th></Tr></Thead>
-                                <Tbody>{records.map((record) => (
-                                    <Tr key={record._id}><Td>{record.qrCode}</Td><Td>{record.date}</Td></Tr>
-                                ))}</Tbody>
-                            </Table>
-                        )}
-                    </>
-                )}
+                <Box flex="1" p={6}>
+                    {selectedTab === "Inventory" && <Inventory />}
+                    {selectedTab === "Ground Fuel Report" && <GroundFuelReport />}
+                    {selectedTab === "Jet Fuel Report" && <JetFuelReport />}
+                </Box>
             </Box>
         </Box>
     );

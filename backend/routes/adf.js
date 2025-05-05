@@ -1,0 +1,132 @@
+const express = require("express");
+const Adf = require("../models/Adf");
+
+const router = express.Router();
+
+router.get("/", async (req, res) => {
+    try {
+        const { page = 1, limit = 25, sortBy = "date", order = "asc" } = req.query;
+        const skip = (page - 1) * limit;
+        
+        const sortOptions = {};
+        sortOptions[sortBy] = order === "asc" ? 1 : -1;
+
+        const records = await Adf.find()
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        const total = await Adf.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+
+        res.json({
+            records,
+            totalPages,
+            currentPage: parseInt(page)
+        });
+    } catch (error) {
+        console.error("Error fetching ADF records:", error);
+        res.status(500).json({ error: "Error fetching ADF records", details: error.message });
+    }
+});
+
+// Get ADF totals
+router.get("/totals", async (req, res) => {
+    try {
+        const daily = await getTotalLiters(Adf, new Date(new Date().setHours(0, 0, 0, 0)));
+        const weekly = await getTotalLiters(Adf, new Date(new Date().setDate(new Date().getDate() - new Date().getDay())));
+        const monthlyTotal = await getTotalLiters(Adf, new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+        const monthly = await getMonthlyLiters(Adf);
+        const quarterly = await getQuarterlyLiters(Adf);
+
+        const totals = {
+            daily,
+            weekly,
+            monthlyTotal,
+            monthly,
+            quarterly
+        };
+
+        res.json(totals);
+    } catch (error) {
+        console.error("Error fetching ADF data:", error);
+        res.status(500).json({ error: "Error fetching ADF data", details: error.message });
+    }
+});
+
+const getTotalLiters = async (model, startDate) => {
+    const result = await model.aggregate([
+        { $match: { date: { $gte: startDate } } },
+        { $group: { _id: null, totalLiters: { $sum: "$liters" } } }
+    ]);
+
+    return result.length > 0 ? result[0].totalLiters : 0;
+};
+
+const getMonthlyLiters = async (model) => {
+    const today = new Date();
+    const months = [];
+
+    for (let i = 11; i >= 0; i--) {
+        const monthDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const monthName = monthDate.toLocaleString("en-US", { month: "long", year: "numeric" });
+        
+        months.push({ month: monthName, totalLiters: 0 });
+    }
+
+    const result = await model.aggregate([
+        {
+            $group: {
+                _id: { year: { $year: "$date" }, month: { $month: "$date" } },
+                totalLiters: { $sum: "$liters" },
+            },
+        },
+    ]);
+
+    result.forEach((item) => {
+        const formattedMonth = new Date(item._id.year, item._id.month - 1, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+        const monthIndex = months.findIndex((m) => m.month === formattedMonth);
+        if (monthIndex !== -1) {
+            months[monthIndex].totalLiters = item.totalLiters;
+        }
+    });
+
+    return months;
+};
+
+const getQuarterlyLiters = async (model) => {
+    try {
+        const quarters = {
+            Q1: { totalLiters: 0 },
+            Q2: { totalLiters: 0 },
+            Q3: { totalLiters: 0 },
+            Q4: { totalLiters: 0 }
+        };
+
+        const result = await model.aggregate([
+            {
+                $group: {
+                    _id: { quarter: { $ceil: { $divide: [{ $month: "$date" }, 3] } } },
+                    totalLiters: { $sum: "$liters" }
+                }
+            }
+        ]);
+
+        result.forEach((item) => {
+            const quarterKey = `Q${item._id.quarter}`;
+            if (quarters[quarterKey]) {
+                quarters[quarterKey].totalLiters = item.totalLiters;
+            }
+        });
+
+        return Object.entries(quarters).map(([key, value]) => ({
+            quarter: key,
+            totalLiters: value.totalLiters
+        }));
+    } catch (error) {
+        console.error("Error in getQuarterlyLiters:", error);
+        throw error;
+    }
+};
+
+module.exports = router;

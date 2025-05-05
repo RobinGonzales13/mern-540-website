@@ -1,0 +1,175 @@
+import { useEffect, useState } from "react";
+import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, Divider } from "@chakra-ui/react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
+import axios from "axios";
+
+const GroundFuelReport = () => {
+    const [monthlyData, setMonthlyData] = useState([]);
+    const [fuelTotals, setFuelTotals] = useState({
+        daily: 0,
+        weekly: 0,
+        monthlyTotal: 0,
+        monthly: [],
+        quarterly: []
+    });
+    const [adfQuarterly, setAdfQuarterly] = useState([]);
+    const [xcsQuarterly, setXcsQuarterly] = useState([]);
+
+    useEffect(() => {
+        fetchData();
+        fetchTotals();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/api/reports/adf-xcs");
+            setMonthlyData(response.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    const fetchTotals = async () => {
+        try {
+            const [adfResponse, xcsResponse] = await Promise.all([
+                axios.get("http://localhost:5000/api/adf/totals"),
+                axios.get("http://localhost:5000/api/xcs/totals")
+            ]);
+
+            // Check if both responses are successful
+            if (!adfResponse.data || !xcsResponse.data) {
+                throw new Error("Invalid response data");
+            }
+
+            // Store quarterly data separately for the bar chart
+            setAdfQuarterly(adfResponse.data.quarterly || []);
+            setXcsQuarterly(xcsResponse.data.quarterly || []);
+
+            const combinedTotals = {
+                daily: (adfResponse.data.daily || 0) + (xcsResponse.data.daily || 0),
+                weekly: (adfResponse.data.weekly || 0) + (xcsResponse.data.weekly || 0),
+                monthlyTotal: (adfResponse.data.monthlyTotal || 0) + (xcsResponse.data.monthlyTotal || 0),
+                monthly: (adfResponse.data.monthly || []).map((month, index) => ({
+                    ...month,
+                    totalLiters: (month.totalLiters || 0) + ((xcsResponse.data.monthly?.[index]?.totalLiters) || 0)
+                })),
+                quarterly: (adfResponse.data.quarterly || []).map((quarter, index) => ({
+                    ...quarter,
+                    totalLiters: (quarter.totalLiters || 0) + ((xcsResponse.data.quarterly?.[index]?.totalLiters) || 0)
+                }))
+            };
+
+            setFuelTotals(combinedTotals);
+        } catch (error) {
+            console.error("Error fetching totals:", error);
+            // Set default values if there's an error
+            setFuelTotals({
+                daily: 0,
+                weekly: 0,
+                monthlyTotal: 0,
+                monthly: [],
+                quarterly: []
+            });
+            setAdfQuarterly([]);
+            setXcsQuarterly([]);
+        }
+    };
+
+    if (!monthlyData.length || !fuelTotals.monthly.length) {
+        return <Box p={4}>Loading...</Box>;
+    }
+
+    return (
+        <Box p={4}>
+            <Heading mb={6}>Ground Fuel Report</Heading>
+
+            {/* Current Statistics */}
+            <Box borderWidth="1px" borderRadius="lg" p={4} mb={6}>
+                <Heading size="md" mb={4}>Current Statistics</Heading>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+                    <Stat>
+                        <StatLabel>Today's Total</StatLabel>
+                        <StatNumber>{fuelTotals.daily.toLocaleString()} L</StatNumber>
+                    </Stat>
+                    <Stat>
+                        <StatLabel>This Week's Total</StatLabel>
+                        <StatNumber>{fuelTotals.weekly.toLocaleString()} L</StatNumber>
+                    </Stat>
+                    <Stat>
+                        <StatLabel>This Month's Total</StatLabel>
+                        <StatNumber>{fuelTotals.monthlyTotal.toLocaleString()} L</StatNumber>
+                    </Stat>
+                    <Stat>
+                        <StatLabel>Year-to-Date Total</StatLabel>
+                        <StatNumber>
+                            {fuelTotals.monthly.reduce((sum, month) => sum + month.totalLiters, 0).toLocaleString()} L
+                        </StatNumber>
+                    </Stat>
+                </SimpleGrid>
+            </Box>
+
+            <Divider my={6} />
+
+            {/* Quarterly Breakdown */}
+            <Box borderWidth="1px" borderRadius="lg" p={4} mb={6}>
+                <Heading size="md" mb={4}>Quarterly Breakdown</Heading>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+                    {fuelTotals.quarterly.map((quarter) => (
+                        <Stat key={quarter.quarter}>
+                            <StatLabel>{quarter.quarter}</StatLabel>
+                            <StatNumber>{quarter.totalLiters.toLocaleString()} L</StatNumber>
+                        </Stat>
+                    ))}
+                </SimpleGrid>
+            </Box>
+
+            <Divider my={6} />
+
+            {/* ADF vs XCS Comparison Chart */}
+            <Box borderWidth="1px" borderRadius="lg" p={4} mb={6}>
+                <Heading size="md" mb={4}>ADF vs XCS Monthly Comparison</Heading>
+                <Box h="300px">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={monthlyData}>
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="adfLiters" stroke="#3182CE" name="ADF" />
+                            <Line type="monotone" dataKey="xcsLiters" stroke="#E53E3E" name="XCS" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </Box>
+            </Box>
+
+            {/* Quarterly Distribution Chart */}
+            <Box borderWidth="1px" borderRadius="lg" p={4}>
+                <Heading size="md" mb={4}>Quarterly Distribution</Heading>
+                <Box h="300px">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={adfQuarterly}>
+                            <XAxis dataKey="quarter" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="totalLiters" fill="#3182CE" name="ADF" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </Box>
+                <Box h="300px" mt={4}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={xcsQuarterly}>
+                            <XAxis dataKey="quarter" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="totalLiters" fill="#E53E3E" name="XCS" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </Box>
+            </Box>
+        </Box>
+    );
+};
+
+export default GroundFuelReport;
