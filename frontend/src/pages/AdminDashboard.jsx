@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get("https://mern-540-backend.onrender.com/api/posts");
+            const response = await axios.get(`${API_URL}/api/posts`);
             setPosts(response.data);
         } catch (error) {
             console.error("Error fetching posts:", error);
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
         images.forEach(image => formData.append("images", image));
     
         try {
-            await axios.post("https://mern-540-backend.onrender.com/api/posts/create", formData, {
+            await axios.post(`${API_URL}/api/posts/create`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
     
@@ -113,7 +113,7 @@ const AdminDashboard = () => {
         }
     
         try {
-            await axios.put(`https://mern-540-backend.onrender.com/api/posts/${postId}`, formData, {
+            await axios.put(`${API_URL}/api/posts/${postId}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
     
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://mern-540-backend.onrender.com/api/posts/${id}`);
+            await axios.delete(`${API_URL}/api/posts/${id}`);
             alert("Post deleted successfully!");
             fetchPosts();
         } catch (error) {

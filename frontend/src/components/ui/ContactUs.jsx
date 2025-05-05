@@ -3,29 +3,37 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { Box, Button, Input, Textarea, Text } from "@chakra-ui/react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://five40airbasegroup-paf-backend.onrender.com";
+
 const ContactUs = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [captchaValue, setCaptchaValue] = useState(null);
+    const [error, setError] = useState("");
     
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-    console.log("Loaded reCAPTCHA Site Key:", import.meta.env.VITE_RECAPTCHA_SITE_KEY);
+    console.log("Environment Variables:", {
+        siteKey,
+        apiUrl: API_URL,
+        env: import.meta.env
+    });
 
     const handleCaptchaChange = (value) => {
         setCaptchaValue(value);
+        setError("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!captchaValue) {
-            alert("Please complete the CAPTCHA verification.");
+            setError("Please complete the CAPTCHA verification.");
             return;
         }
 
         try {
-            await axios.post("https://mern-540-backend.onrender.com/api/contact", {
+            await axios.post(`${API_URL}/api/contact`, {
                 name,
                 email,
                 message,
@@ -37,8 +45,10 @@ const ContactUs = () => {
             setEmail("");
             setMessage("");
             setCaptchaValue(null);
+            setError("");
         } catch (error) {
-            alert("Error sending message.");
+            console.error("Error sending message:", error);
+            setError("Error sending message. Please try again.");
         }
     };
 
@@ -65,13 +75,17 @@ const ContactUs = () => {
             />
             
             {siteKey ? (
-                <ReCAPTCHA 
-                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY} 
-                onChange={handleCaptchaChange} 
-              />
+                <Box mb={3}>
+                    <ReCAPTCHA 
+                        sitekey={siteKey}
+                        onChange={handleCaptchaChange} 
+                    />
+                </Box>
             ) : (
-                <Text color="red.500">⚠ reCAPTCHA site key is missing!</Text>
+                <Text color="red.500" mb={3}>⚠ reCAPTCHA site key is missing!</Text>
             )}
+
+            {error && <Text color="red.500" mb={3}>{error}</Text>}
 
             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>Send</Button>
         </Box>
