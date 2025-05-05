@@ -176,7 +176,7 @@ const HomePage = () => {
                               {post.images.map((img, index) => (
                                   <SwiperSlide key={index}>
                                       <Image 
-                                          src={`${API_URL}${img}`} 
+                                          src={img} 
                                           alt={`Slide ${index}`} 
                                           boxSize="100%" 
                                           objectFit="cover"
