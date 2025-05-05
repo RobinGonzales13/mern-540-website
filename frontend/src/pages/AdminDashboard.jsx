@@ -22,6 +22,7 @@ const AdminDashboard = () => {
     const [updatedTitle, setUpdatedTitle] = useState("");
     const [updatedContent, setUpdatedContent] = useState("");
     const [newImages, setNewImages] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
 
 
     useEffect(() => {
@@ -68,6 +69,8 @@ const AdminDashboard = () => {
             alert("Please provide both title and content!");
             return;
         }
+
+        setIsUploading(true);
     
         const formData = new FormData();
         formData.append("title", title);
@@ -95,6 +98,8 @@ const AdminDashboard = () => {
         } catch (error) {
             console.error("Error uploading post:", error);
             alert(error.response?.data?.message || "Error uploading post. Please try again.");
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -194,7 +199,15 @@ const AdminDashboard = () => {
                     {previews.length > 0 && previews.map((src, index) => (
                         <Image key={index} src={src} alt={`Preview ${index}`} boxSize="100px" />
                     ))}
-                    <Button colorScheme="blue" onClick={handleUpload}>Submit</Button>
+                    <Button 
+                        colorScheme="blue" 
+                        onClick={handleUpload}
+                        isLoading={isUploading}
+                        loadingText="Uploading..."
+                        disabled={isUploading}
+                    >
+                        Submit
+                    </Button>
                 </VStack>
             </Box>
 
