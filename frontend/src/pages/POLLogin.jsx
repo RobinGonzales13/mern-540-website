@@ -44,7 +44,7 @@ const POLLogin = () => {
           duration: 3000,
           isClosable: true,
         });
-        navigate("/POLDashboard");
+        navigate("/pol-dashboard");
       }
     } catch (error) {
       toast({

@@ -52,6 +52,14 @@ function App() {
             </AdminRoute>
           }
         />
+        <Route
+          path="/pol-dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </Box>
   );
