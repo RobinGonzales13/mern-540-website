@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/ui/navbar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,65 +58,67 @@ const POLLogin = () => {
   };
 
   return (
-    <Box
-      minH="100vh"
-      bg="gray.100"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      p={4}
-    >
+    <Box minH="100vh" bg="gray.100">
+      <Navbar showContactButton={false} />
       <Box
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="lg"
-        w="100%"
-        maxW="400px"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        p={4}
+        mt={8}
       >
-        <VStack spacing={6} align="stretch">
-          <Image
-            src="/pol.jpg"
-            alt="POL Dump Logo"
-            w="200px"
-            mx="auto"
-            mb={4}
-          />
-          <Heading textAlign="center" size="lg">
-            POL Dump Login
-          </Heading>
-          <form onSubmit={handleSubmit}>
-            <VStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel>Username</FormLabel>
-                <Input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
-                />
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                />
-              </FormControl>
-              <Button
-                type="submit"
-                colorScheme="blue"
-                w="100%"
-                isLoading={loading}
-                loadingText="Logging in..."
-              >
-                Login
-              </Button>
-            </VStack>
-          </form>
-        </VStack>
+        <Box
+          bg="white"
+          p={8}
+          borderRadius="lg"
+          boxShadow="lg"
+          w="100%"
+          maxW="400px"
+        >
+          <VStack spacing={6} align="stretch">
+            <Image
+              src="/pol.jpg"
+              alt="POL Dump Logo"
+              w="200px"
+              mx="auto"
+              mb={4}
+            />
+            <Heading textAlign="center" size="lg">
+              POL Dump Login
+            </Heading>
+            <form onSubmit={handleSubmit}>
+              <VStack spacing={4}>
+                <FormControl isRequired>
+                  <FormLabel>Username</FormLabel>
+                  <Input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your username"
+                  />
+                </FormControl>
+                <FormControl isRequired>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  w="100%"
+                  isLoading={loading}
+                  loadingText="Logging in..."
+                >
+                  Login
+                </Button>
+              </VStack>
+            </form>
+          </VStack>
+        </Box>
       </Box>
     </Box>
   );
