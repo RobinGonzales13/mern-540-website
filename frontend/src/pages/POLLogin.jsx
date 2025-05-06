@@ -12,6 +12,7 @@ import {
   Image,
   Flex,
   Container,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -20,19 +21,43 @@ import Navbar from "../components/ui/navbar";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const POLLogin = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const toast = useToast();
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
+
+    // Validate email
+    if (!email) {
+      setErrors({ email: "Email is required" });
+      return;
+    }
+    if (!validateEmail(email)) {
+      setErrors({ email: "Please enter a valid email address" });
+      return;
+    }
+
+    // Validate password
+    if (!password) {
+      setErrors({ password: "Password is required" });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await axios.post(`${API_URL}/api/pol/login`, {
-        username,
+        email,
         password,
       });
 
@@ -117,18 +142,19 @@ const POLLogin = () => {
               </Heading>
               <form onSubmit={handleSubmit}>
                 <VStack spacing={4}>
-                  <FormControl isRequired>
-                    <FormLabel fontWeight="medium">Username</FormLabel>
+                  <FormControl isRequired isInvalid={errors.email}>
+                    <FormLabel fontWeight="medium">Email</FormLabel>
                     <Input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Enter your username"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
                       size="lg"
                       focusBorderColor="blue.500"
                     />
+                    <FormErrorMessage>{errors.email}</FormErrorMessage>
                   </FormControl>
-                  <FormControl isRequired>
+                  <FormControl isRequired isInvalid={errors.password}>
                     <FormLabel fontWeight="medium">Password</FormLabel>
                     <Input
                       type="password"
@@ -138,6 +164,7 @@ const POLLogin = () => {
                       size="lg"
                       focusBorderColor="blue.500"
                     />
+                    <FormErrorMessage>{errors.password}</FormErrorMessage>
                   </FormControl>
                   <Button
                     type="submit"
