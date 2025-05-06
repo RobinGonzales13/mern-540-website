@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Spinner, Text, Flex, Image, VStack, Heading, Input, Textarea, useToast, FormControl, FormLabel, FormErrorMessage, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
+import { Box, Button, Spinner, Text, Flex, Image, VStack, Heading, Input, Textarea, useToast, FormControl, FormLabel, FormErrorMessage, Alert, AlertIcon, AlertTitle, AlertDescription, Grid } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { format } from "date-fns"; 
 import "swiper/css";
@@ -262,177 +262,188 @@ const AdminDashboard = () => {
                 </Button>
             </Flex>
 
-            <Box p={6}>
-                <Heading mb={4}>Create a New Post</Heading>
-                <VStack spacing={4} align="start">
-                    <Alert status="info" variant="subtle">
-                        <AlertIcon />
-                        <Box>
-                            <AlertTitle>Image Guidelines</AlertTitle>
-                            <AlertDescription>
-                                Recommended image resolution is 1200x800px. You can upload up to 10 images per post.
-                            </AlertDescription>
-                        </Box>
-                    </Alert>
+            <Box maxW="1200px" mx="auto" p={6}>
+                <Grid
+                    templateColumns={{ base: "1fr", md: "1fr 2fr" }}
+                    gap={6}
+                >
+                    {/* Create Post Section */}
+                    <Box bg="white" p={6} borderRadius="lg" boxShadow="md">
+                        <Heading mb={4}>Create a New Post</Heading>
+                        <VStack spacing={4} align="start">
+                            <Alert status="info" variant="subtle">
+                                <AlertIcon />
+                                <Box>
+                                    <AlertTitle>Image Guidelines</AlertTitle>
+                                    <AlertDescription>
+                                        Recommended image resolution is 1200x800px. You can upload up to 10 images per post.
+                                    </AlertDescription>
+                                </Box>
+                            </Alert>
 
-                    <FormControl isInvalid={errors.title}>
-                        <FormLabel>Title</FormLabel>
-                        <Input 
-                            placeholder="Enter post title" 
-                            value={title} 
-                            onChange={(e) => setTitle(e.target.value)} 
-                        />
-                        <FormErrorMessage>{errors.title}</FormErrorMessage>
-                    </FormControl>
-
-                    <FormControl isInvalid={errors.content}>
-                        <FormLabel>Content</FormLabel>
-                        <Textarea 
-                            placeholder="Enter post content" 
-                            value={content} 
-                            onChange={(e) => setContent(e.target.value)} 
-                        />
-                        <FormErrorMessage>{errors.content}</FormErrorMessage>
-                    </FormControl>
-
-                    <FormControl isInvalid={errors.images}>
-                        <FormLabel>Images</FormLabel>
-                        <Input 
-                            type="file" 
-                            accept="image/*" 
-                            multiple 
-                            onChange={handleImageChange} 
-                        />
-                        <FormErrorMessage>{errors.images}</FormErrorMessage>
-                    </FormControl>
-
-                    {previews.length > 0 && (
-                        <Flex wrap="wrap" gap={2}>
-                            {previews.map((src, index) => (
-                                <Image 
-                                    key={index} 
-                                    src={src} 
-                                    alt={`Preview ${index}`} 
-                                    boxSize="100px" 
-                                    objectFit="cover"
+                            <FormControl isInvalid={errors.title}>
+                                <FormLabel>Title</FormLabel>
+                                <Input 
+                                    placeholder="Enter post title" 
+                                    value={title} 
+                                    onChange={(e) => setTitle(e.target.value)} 
                                 />
-                            ))}
-                        </Flex>
-                    )}
+                                <FormErrorMessage>{errors.title}</FormErrorMessage>
+                            </FormControl>
 
-                    <Button 
-                        colorScheme="blue" 
-                        onClick={handleUpload} 
-                        isLoading={isUploading}
-                        loadingText="Uploading..."
-                        w="100%"
-                    >
-                        Create Post
-                    </Button>
-                </VStack>
+                            <FormControl isInvalid={errors.content}>
+                                <FormLabel>Content</FormLabel>
+                                <Textarea 
+                                    placeholder="Enter post content" 
+                                    value={content} 
+                                    onChange={(e) => setContent(e.target.value)} 
+                                />
+                                <FormErrorMessage>{errors.content}</FormErrorMessage>
+                            </FormControl>
 
-                <Heading mt={8} mb={4}>Manage Posts</Heading>
-                <VStack spacing={4}>
-                    {posts.map((post) => (
-                        <Box 
-                            key={post._id} 
-                            bg="white" 
-                            p={4} 
-                            borderRadius="md" 
-                            boxShadow="sm" 
-                            w="100%"
-                        >
-                            {editingPost === post._id ? (
-                                <VStack spacing={4} align="start">
-                                    <FormControl isInvalid={errors.updatedTitle}>
-                                        <FormLabel>Title</FormLabel>
-                                        <Input 
-                                            value={updatedTitle} 
-                                            onChange={(e) => setUpdatedTitle(e.target.value)} 
+                            <FormControl isInvalid={errors.images}>
+                                <FormLabel>Images</FormLabel>
+                                <Input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    multiple 
+                                    onChange={handleImageChange} 
+                                />
+                                <FormErrorMessage>{errors.images}</FormErrorMessage>
+                            </FormControl>
+
+                            {previews.length > 0 && (
+                                <Flex wrap="wrap" gap={2}>
+                                    {previews.map((src, index) => (
+                                        <Image 
+                                            key={index} 
+                                            src={src} 
+                                            alt={`Preview ${index}`} 
+                                            boxSize="100px" 
+                                            objectFit="cover"
                                         />
-                                        <FormErrorMessage>{errors.updatedTitle}</FormErrorMessage>
-                                    </FormControl>
-
-                                    <FormControl isInvalid={errors.updatedContent}>
-                                        <FormLabel>Content</FormLabel>
-                                        <Textarea 
-                                            value={updatedContent} 
-                                            onChange={(e) => setUpdatedContent(e.target.value)} 
-                                        />
-                                        <FormErrorMessage>{errors.updatedContent}</FormErrorMessage>
-                                    </FormControl>
-
-                                    <FormControl isInvalid={errors.newImages}>
-                                        <FormLabel>Add New Images</FormLabel>
-                                        <Input 
-                                            type="file" 
-                                            accept="image/*" 
-                                            multiple 
-                                            onChange={handleNewImageChange} 
-                                        />
-                                        <FormErrorMessage>{errors.newImages}</FormErrorMessage>
-                                    </FormControl>
-
-                                    <Flex gap={2}>
-                                        <Button 
-                                            colorScheme="green" 
-                                            onClick={() => handleSaveEdit(post._id)}
-                                        >
-                                            Save
-                                        </Button>
-                                        <Button 
-                                            colorScheme="gray" 
-                                            onClick={() => setEditingPost(null)}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </Flex>
-                                </VStack>
-                            ) : (
-                                <>
-                                    <Text fontSize="xl" fontWeight="bold">{post.title}</Text>
-                                    <Text>{post.content}</Text>
-                                    <Text fontSize="sm" color="gray.500">
-                                        Created: {format(new Date(post.createdAt), 'PPP')}
-                                    </Text>
-                                    <Swiper
-                                        modules={[Navigation, Pagination]}
-                                        navigation
-                                        pagination={{ clickable: true }}
-                                        spaceBetween={30}
-                                        slidesPerView={1}
-                                    >
-                                        {post.images.map((image, index) => (
-                                            <SwiperSlide key={index}>
-                                                <Image 
-                                                    src={image} 
-                                                    alt={`Post image ${index}`} 
-                                                    w="100%" 
-                                                    h="300px" 
-                                                    objectFit="cover"
-                                                />
-                                            </SwiperSlide>
-                                        ))}
-                                    </Swiper>
-                                    <Flex gap={2} mt={4}>
-                                        <Button 
-                                            colorScheme="blue" 
-                                            onClick={() => handleEdit(post)}
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button 
-                                            colorScheme="red" 
-                                            onClick={() => handleDelete(post._id)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </Flex>
-                                </>
+                                    ))}
+                                </Flex>
                             )}
-                        </Box>
-                    ))}
-                </VStack>
+
+                            <Button 
+                                colorScheme="blue" 
+                                onClick={handleUpload} 
+                                isLoading={isUploading}
+                                loadingText="Uploading..."
+                                w="100%"
+                            >
+                                Create Post
+                            </Button>
+                        </VStack>
+                    </Box>
+
+                    {/* Posts Section */}
+                    <Box>
+                        <Heading mb={4}>Manage Posts</Heading>
+                        <VStack spacing={4}>
+                            {posts.map((post) => (
+                                <Box 
+                                    key={post._id} 
+                                    bg="white" 
+                                    p={4} 
+                                    borderRadius="lg" 
+                                    boxShadow="md" 
+                                    w="100%"
+                                >
+                                    {editingPost === post._id ? (
+                                        <VStack spacing={4} align="start">
+                                            <FormControl isInvalid={errors.updatedTitle}>
+                                                <FormLabel>Title</FormLabel>
+                                                <Input 
+                                                    value={updatedTitle} 
+                                                    onChange={(e) => setUpdatedTitle(e.target.value)} 
+                                                />
+                                                <FormErrorMessage>{errors.updatedTitle}</FormErrorMessage>
+                                            </FormControl>
+
+                                            <FormControl isInvalid={errors.updatedContent}>
+                                                <FormLabel>Content</FormLabel>
+                                                <Textarea 
+                                                    value={updatedContent} 
+                                                    onChange={(e) => setUpdatedContent(e.target.value)} 
+                                                />
+                                                <FormErrorMessage>{errors.updatedContent}</FormErrorMessage>
+                                            </FormControl>
+
+                                            <FormControl isInvalid={errors.newImages}>
+                                                <FormLabel>Add New Images</FormLabel>
+                                                <Input 
+                                                    type="file" 
+                                                    accept="image/*" 
+                                                    multiple 
+                                                    onChange={handleNewImageChange} 
+                                                />
+                                                <FormErrorMessage>{errors.newImages}</FormErrorMessage>
+                                            </FormControl>
+
+                                            <Flex gap={2}>
+                                                <Button 
+                                                    colorScheme="green" 
+                                                    onClick={() => handleSaveEdit(post._id)}
+                                                >
+                                                    Save
+                                                </Button>
+                                                <Button 
+                                                    colorScheme="gray" 
+                                                    onClick={() => setEditingPost(null)}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </Flex>
+                                        </VStack>
+                                    ) : (
+                                        <>
+                                            <Text fontSize="xl" fontWeight="bold">{post.title}</Text>
+                                            <Text>{post.content}</Text>
+                                            <Text fontSize="sm" color="gray.500">
+                                                Created: {format(new Date(post.createdAt), 'PPP')}
+                                            </Text>
+                                            <Swiper
+                                                modules={[Navigation, Pagination]}
+                                                navigation
+                                                pagination={{ clickable: true }}
+                                                spaceBetween={30}
+                                                slidesPerView={1}
+                                            >
+                                                {post.images.map((image, index) => (
+                                                    <SwiperSlide key={index}>
+                                                        <Image 
+                                                            src={image} 
+                                                            alt={`Post image ${index}`} 
+                                                            w="100%" 
+                                                            h="300px" 
+                                                            objectFit="cover"
+                                                        />
+                                                    </SwiperSlide>
+                                                ))}
+                                            </Swiper>
+                                            <Flex gap={2} mt={4}>
+                                                <Button 
+                                                    colorScheme="blue" 
+                                                    onClick={() => handleEdit(post)}
+                                                >
+                                                    Edit
+                                                </Button>
+                                                <Button 
+                                                    colorScheme="red" 
+                                                    onClick={() => handleDelete(post._id)}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </Flex>
+                                        </>
+                                    )}
+                                </Box>
+                            ))}
+                        </VStack>
+                    </Box>
+                </Grid>
             </Box>
         </Box>
     );
