@@ -20,9 +20,9 @@ const POLDashboard = () => {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("polToken");
             if (!token) {
-                navigate("/login");
+                navigate("/pol-login");
                 return;
             }
 
@@ -33,7 +33,7 @@ const POLDashboard = () => {
                 setUser(res.data.user);
             } catch (error) {
                 console.error("Error fetching user:", error);
-                navigate("/login");
+                navigate("/pol-login");
             } finally {
                 setLoading(false);
             }
@@ -43,8 +43,8 @@ const POLDashboard = () => {
     }, [navigate]);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        navigate("/login");
+        localStorage.removeItem("polToken");
+        navigate("/pol-login");
     };
 
     if (loading) {
