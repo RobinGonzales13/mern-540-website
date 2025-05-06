@@ -65,7 +65,7 @@ const POLLogin = () => {
         alignItems="center"
         justifyContent="center"
         p={4}
-        mt={8}
+        mt={20}
       >
         <Box
           bg="white"
