@@ -18,7 +18,7 @@ const Inventory = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/${inventoryType}?page=${currentPage}&limit=25&sortBy=${sortBy}&order=${order}`);
+            const response = await axios.get(`https://five40airbasegroup-paf-backend.onrender.com/api/${inventoryType}?page=${currentPage}&limit=25&sortBy=${sortBy}&order=${order}`);
             setData(response.data.records);
             setTotalPages(response.data.totalPages);
             window.scrollTo({ top: 0, behavior: "smooth" });

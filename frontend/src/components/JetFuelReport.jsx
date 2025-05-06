@@ -14,7 +14,7 @@ const JetFuelReport = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/xcs/totals");
+            const response = await axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/xcs/totals");
             if (response.data.monthly) {
                 setMonthlyData(response.data.monthly);
             }
@@ -26,7 +26,7 @@ const JetFuelReport = () => {
 
     const fetchTotals = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/xcs/totals");
+            const response = await axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/xcs/totals");
             setFuelTotals(response.data);
         } catch (error) {
             console.error("Error fetching XCS totals:", error);

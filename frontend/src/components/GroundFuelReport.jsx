@@ -22,7 +22,7 @@ const GroundFuelReport = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/reports/adf-xcs");
+            const response = await axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/reports/adf-xcs");
             setMonthlyData(response.data);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -32,9 +32,9 @@ const GroundFuelReport = () => {
     const fetchTotals = async () => {
         try {
             const [adfResponse, xcsResponse] = await Promise.all([
-                axios.get("http://localhost:5000/api/adf/totals"),
-                axios.get("http://localhost:5000/api/xcs/totals")
-            ]);
+                axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/adf/totals"),
+                axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/xcs/totals")
+            ]);            
 
             // Check if both responses are successful
             if (!adfResponse.data || !xcsResponse.data) {
