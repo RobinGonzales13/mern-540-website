@@ -28,7 +28,6 @@ app.use(limiter);
 
 // CORS configuration
 const allowedOrigins = [
-    "http://localhost:5173",
     "https://five40airbasegroup-paf-frontend.onrender.com",
     "https://five40airbasegroup-paf-backend.onrender.com"
 ];
@@ -38,6 +37,7 @@ app.use(cors({
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log(`❌ Blocked by CORS: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
