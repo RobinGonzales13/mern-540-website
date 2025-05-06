@@ -11,11 +11,11 @@ import MissionVision546 from "./pages/m546";
 import MissionVision547 from "./pages/m547";
 import MissionVision548 from "./pages/m548";
 import MissionVision549 from "./pages/m549";
-import Login from "./pages/AdminLogin";
+import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./components/ui/AdminRoute";
 import Achievements from "./pages/Achievements";
-import POLLOgin from "./pages/POLLogin";
+import POLLogin from "./pages/POLLogin";
 import POLDashboard from "./pages/POLDashboard";
 import History from "./pages/History";
 import Contact from "./pages/Contact";
@@ -37,9 +37,9 @@ function App() {
         <Route path="/548th-Mission-Vision" element={<MissionVision548 />} />
         <Route path="/549th-Mission-Vision" element={<MissionVision549 />} />
         <Route path="/achievements" element={<Achievements />} />
-        <Route path="/Admin-Login" element={<Login />} />
+        <Route path="/Admin-Login" element={<AdminLogin />} />
         <Route path="/Contact" element={<Contact />} />
-        <Route path="/pol-login" element={<POLLOgin />} />
+        <Route path="/pol-login" element={<POLLogin />} />
         <Route path="/POLDashboard" element={<POLDashboard />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -56,7 +56,7 @@ function App() {
           path="/pol-dashboard"
           element={
             <POLRoute>
-              <POLLOgin />
+              <POLDashboard />
             </POLRoute>
           }
         />
