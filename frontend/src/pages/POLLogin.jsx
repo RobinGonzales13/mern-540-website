@@ -60,7 +60,23 @@ const POLLogin = () => {
   };
 
   return (
-    <Box minH="100vh" bg="gray.100">
+    <Box 
+      minH="100vh" 
+      bg="linear-gradient(135deg, rgb(5, 19, 38) 0%, rgb(8, 28, 54) 100%)"
+      _before={{
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0)",
+        backgroundSize: "40px 40px",
+        opacity: 0.5,
+        pointerEvents: "none"
+      }}
+      position="relative"
+    >
       <Navbar showContactButton={false} />
       <Container maxW="container.xl" py={10}>
         <Flex
@@ -78,6 +94,8 @@ const POLLogin = () => {
             maxW="400px"
             border="1px solid"
             borderColor="gray.200"
+            position="relative"
+            zIndex={1}
           >
             <VStack spacing={6} align="stretch">
               <Image
