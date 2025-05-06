@@ -25,41 +25,34 @@ function App() {
   return (
     <Box minH="100vh" w="100%" overflowX="hidden" position="absolute">
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/history" element={<History />} />
-        <Route path="/541st-Mission-Vision" element={<MissionVision541 />} />
-        <Route path="/542nd-Mission-Vision" element={<MissionVision542 />} />
-        <Route path="/543rd-Mission-Vision" element={<MissionVision543 />} />
-        <Route path="/544th-Mission-Vision" element={<MissionVision544 />} />
-        <Route path="/545th-Mission-Vision" element={<MissionVision545 />} />
-        <Route path="/546th-Mission-Vision" element={<MissionVision546 />} />
-        <Route path="/547th-Mission-Vision" element={<MissionVision547 />} />
-        <Route path="/548th-Mission-Vision" element={<MissionVision548 />} />
-        <Route path="/549th-Mission-Vision" element={<MissionVision549 />} />
         <Route path="/achievements" element={<Achievements />} />
-        <Route path="/Admin-Login" element={<AdminLogin />} />
-        <Route path="/Contact" element={<Contact />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/pol-login" element={<POLLogin />} />
-        <Route path="/POLDashboard" element={<POLDashboard />} />
+        <Route path="/contact" element={<Contact />} />
+
+        {/* Mission Vision Pages */}
+        <Route path="/541st-mission-vision" element={<MissionVision541 />} />
+        <Route path="/542nd-mission-vision" element={<MissionVision542 />} />
+        <Route path="/543rd-mission-vision" element={<MissionVision543 />} />
+        <Route path="/544th-mission-vision" element={<MissionVision544 />} />
+        <Route path="/545th-mission-vision" element={<MissionVision545 />} />
+        <Route path="/546th-mission-vision" element={<MissionVision546 />} />
+        <Route path="/547th-mission-vision" element={<MissionVision547 />} />
+        <Route path="/548th-mission-vision" element={<MissionVision548 />} />
+        <Route path="/549th-mission-vision" element={<MissionVision549 />} />
+
+        {/* Protected Admin Route */}
         <Route element={<AdminRoute />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Route>
-        <Route
-          path="/Admin-Dashboard"
-          element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/pol-dashboard"
-          element={
-            <AdminRoute>
-              <POLDashboard />
-            </AdminRoute>
-          }
-        />
+
+        {/* Protected POL Route */}
+        <Route element={<POLRoute />}>
+          <Route path="/pol-dashboard" element={<POLDashboard />} />
+        </Route>
       </Routes>
     </Box>
   );
