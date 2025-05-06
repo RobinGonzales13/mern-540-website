@@ -56,7 +56,7 @@ function App() {
           path="/pol-dashboard"
           element={
             <AdminRoute>
-              <AdminDashboard />
+              <POLDashboard />
             </AdminRoute>
           }
         />
