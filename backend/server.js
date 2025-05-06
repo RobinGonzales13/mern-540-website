@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.route.js"; 
+import polAuthRoutes from "./routes/polAuth.route.js";
 import blogPostRoutes from "./routes/blogPost.route.js";
 import contactRoutes from "./routes/contact.route.js";
 import rateLimit from "express-rate-limit";
@@ -46,7 +47,8 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/api/auth", authRoutes); 
+app.use("/api/auth", authRoutes);
+app.use("/api/pol", polAuthRoutes);
 app.use("/api/posts", blogPostRoutes);
 app.use("/api/contact", contactRoutes);
 
