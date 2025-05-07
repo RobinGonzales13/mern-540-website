@@ -140,4 +140,4 @@ const getQuarterlyLiters = async (model) => {
     }));
 };
 
-module.exports = router;
+export default router;
