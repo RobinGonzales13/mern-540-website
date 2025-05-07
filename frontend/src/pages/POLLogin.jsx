@@ -31,6 +31,8 @@ const POLLogin = () => {
     setLoading(true);
 
     try {
+      console.log("API_URL is:", API_URL);
+      console.log("POSTing to:", `${API_URL}/api/pol/login`);
       const response = await axios.post(`${API_URL}/api/pol/login`, {
         username,
         password,
