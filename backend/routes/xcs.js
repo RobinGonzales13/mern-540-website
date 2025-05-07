@@ -1,5 +1,5 @@
-const express = require("express");
-const Xcs = require("../models/Xcs");
+import express from "express";
+import Xcs from "../models/Xcs.js";
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
     try {
         const { page = 1, limit = 25, sortBy = "date", order = "asc" } = req.query;
         const skip = (page - 1) * limit;
-        
+
         const sortOptions = {};
         sortOptions[sortBy] = order === "asc" ? 1 : -1;
 
@@ -40,15 +40,13 @@ router.get("/totals", async (req, res) => {
         const monthly = await getMonthlyLiters(Xcs);
         const quarterly = await getQuarterlyLiters(Xcs);
 
-        const totals = {
+        res.json({
             daily,
             weekly,
             monthlyTotal,
             monthly,
             quarterly
-        };
-
-        res.json(totals);
+        });
     } catch (error) {
         console.error("Error fetching XCS data:", error);
         res.status(500).json({ error: "Error fetching XCS data", details: error.message });
@@ -70,6 +68,7 @@ router.post("/addMany", async (req, res) => {
     }
 });
 
+// Helper: Total liters since a given date
 const getTotalLiters = async (model, startDate) => {
     const result = await model.aggregate([
         { $match: { date: { $gte: startDate } } },
@@ -79,6 +78,7 @@ const getTotalLiters = async (model, startDate) => {
     return result.length > 0 ? result[0].totalLiters : 0;
 };
 
+// Helper: Monthly liters for past 12 months
 const getMonthlyLiters = async (model) => {
     const today = new Date();
     const months = [];
@@ -86,7 +86,6 @@ const getMonthlyLiters = async (model) => {
     for (let i = 11; i >= 0; i--) {
         const monthDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
         const monthName = monthDate.toLocaleString("en-US", { month: "long", year: "numeric" });
-        
         months.push({ month: monthName, totalLiters: 0 });
     }
 
@@ -94,13 +93,14 @@ const getMonthlyLiters = async (model) => {
         {
             $group: {
                 _id: { year: { $year: "$date" }, month: { $month: "$date" } },
-                totalLiters: { $sum: "$liters" },
-            },
-        },
+                totalLiters: { $sum: "$liters" }
+            }
+        }
     ]);
 
     result.forEach((item) => {
-        const formattedMonth = new Date(item._id.year, item._id.month - 1, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+        const formattedMonth = new Date(item._id.year, item._id.month - 1, 1)
+            .toLocaleString("en-US", { month: "long", year: "numeric" });
         const monthIndex = months.findIndex((m) => m.month === formattedMonth);
         if (monthIndex !== -1) {
             months[monthIndex].totalLiters = item.totalLiters;
@@ -110,6 +110,7 @@ const getMonthlyLiters = async (model) => {
     return months;
 };
 
+// Helper: Quarterly liters
 const getQuarterlyLiters = async (model) => {
     const quarters = {
         Q1: { totalLiters: 0 },

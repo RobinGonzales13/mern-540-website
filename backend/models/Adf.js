@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const adfSchema = new mongoose.Schema({
     date: { type: Date, required: true },
@@ -10,4 +10,4 @@ const adfSchema = new mongoose.Schema({
 
 const Adf = mongoose.model("Adf", adfSchema, "adf");
 
-module.exports = Adf;
+export default Adf;

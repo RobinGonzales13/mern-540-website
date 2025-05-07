@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const recordSchema = new mongoose.Schema({
     date: { type: Date, required: true },
@@ -8,6 +8,7 @@ const recordSchema = new mongoose.Schema({
     liters: { type: Number, required: true }
 });
 
-const Record = mongoose.model("adf", recordSchema, "adf");
+// It looks like the model name in the `mongoose.model` function should be "Record" instead of "adf"
+const Record = mongoose.model("Record", recordSchema, "adf");
 
-module.exports = Record;
+export default Record;

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const groundFuelSchema = new mongoose.Schema({
     date: { type: Date, required: true },
@@ -10,4 +10,4 @@ const groundFuelSchema = new mongoose.Schema({
 
 const GroundFuel = mongoose.model("GroundFuel", groundFuelSchema, "groundfuel");
 
-module.exports = GroundFuel;
+export default GroundFuel;

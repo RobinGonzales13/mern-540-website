@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const xcsSchema = new mongoose.Schema({
     date: { type: Date, required: true },
@@ -10,4 +10,4 @@ const xcsSchema = new mongoose.Schema({
 
 const Xcs = mongoose.model("Xcs", xcsSchema, "xcs");
 
-module.exports = Xcs;
+export default Xcs;
