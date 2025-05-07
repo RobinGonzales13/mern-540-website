@@ -27,17 +27,17 @@ const POLDashboard = () => {
             }
 
             try {
-                const res = await axios.get(`${API_URL}/api/verify`, {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/pol/verify`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                
+            
                 setUser(res.data.user);
             } catch (error) {
                 console.error("Error fetching user:", error);
                 navigate("/pol-login");
             } finally {
                 setLoading(false);
-            }
+            }            
         };
 
         fetchUser();
