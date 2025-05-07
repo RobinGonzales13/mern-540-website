@@ -2,28 +2,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import POLUser from "../models/polUser.model.js";
 
-
-export const createUser = async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const existing = await POLUser.findOne({ username });
-    if (existing) {
-      return res.status(400).json({ success: false, message: "Username already exists" });
-    }
-
-    const newUser = new POLUser({ username, password });
-    await newUser.save();
-
-    res.status(201).json({ success: true, message: "User created successfully" });
-  } catch (error) {
-    console.error("Create user error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-
-
 export const login = async (req, res) => {
     const { username, password } = req.body;
 
