@@ -1,14 +1,10 @@
 import express from "express";
-import { login, verifyToken } from "../controllers/polAuth.controller.js";
+import { login, verifyToken, createUser } from "../controllers/polAuth.controller.js";
 
 const router = express.Router();
 
-
-import { createUser } from "../controllers/polAuth.controller.js";
-router.post("/create-user", createUser); // 👈 Add this line
-
-
 router.post("/login", login);
 router.get("/verify", verifyToken);
+router.post("/create-user", createUser); // ✅ This must come AFTER router is initialized
 
-export default router; 
+export default router;
