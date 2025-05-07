@@ -27,9 +27,10 @@ const POLDashboard = () => {
             }
 
             try {
-                const res = await axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/auth/user", {
+                const res = await axios.get(`${API_URL}/api/verify`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                
                 setUser(res.data.user);
             } catch (error) {
                 console.error("Error fetching user:", error);
