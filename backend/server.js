@@ -10,6 +10,10 @@ import contactRoutes from "./routes/contact.route.js";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
+import adfRoutes from "./routes/adf.js";
+import xcsRoutes from "./routes/xcs.js";
+
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +55,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/pol", polAuthRoutes);
 app.use("/api/posts", blogPostRoutes);
 app.use("/api/contact", contactRoutes);
+
+app.use("/api/adf", adfRoutes);
+app.use("/api/xcs", xcsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
