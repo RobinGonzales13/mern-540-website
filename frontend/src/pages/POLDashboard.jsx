@@ -240,9 +240,7 @@ const POLDashboard = () => {
                 </Box>
 
                 <Box flex="1" p={6}>
-                    {selectedTab === "Inventory" && <Inventory />}
-                    {selectedTab === "Ground Fuel Report" && <GroundFuelReport />}
-                    {selectedTab === "Jet Fuel Report" && <JetFuelReport />}
+                    {renderContent()}
                 </Box>
             </Box>
         </Box>
