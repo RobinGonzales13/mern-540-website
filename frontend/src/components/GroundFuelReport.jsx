@@ -78,16 +78,10 @@ const GroundFuelReport = () => {
 
     return (
         <Box p={4}>
-            <Button 
-                position="absolute" 
-                top="10px" 
-                right="10px" 
-                onClick={handlePrint}
-            >
-                Print
-            </Button>
-
-            <Heading mb={6}>Ground Fuel Report</Heading>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={6}>
+                <Heading as="h2">Ground Fuel Report</Heading>
+                <Button onClick={handlePrint}>Print</Button>
+            </Box>
 
             {/* Current Statistics */}
             <Box borderWidth="1px" borderRadius="lg" p={4} mb={6}>
