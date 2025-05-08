@@ -53,23 +53,6 @@ router.get("/totals", async (req, res) => {
     }
 });
 
-/*
-// Add multiple XCS records
-router.post("/addMany", async (req, res) => {
-    try {
-        const { xcs } = req.body;
-        if (!xcs || !Array.isArray(xcs)) {
-            return res.status(400).json({ error: "Invalid data format" });
-        }
-
-        await Xcs.insertMany(xcs);
-        res.status(201).json({ message: "Records added to XCS successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Error adding XCS records", details: error.message });
-    }
-});
-*/
-
 // PUT update XCS record
 router.put("/:id", async (req, res) => {
     try {
@@ -112,6 +95,31 @@ router.delete("/:id", async (req, res) => {
     } catch (error) {
         console.error("Error deleting XCS record:", error);
         res.status(500).json({ error: "Error deleting XCS record", details: error.message });
+    }
+});
+
+// POST: Create new XCS record
+router.post("/", async (req, res) => {
+    try {
+        const { date, controlNumber, purpose, receivedBy, liters } = req.body;
+
+        if (!date || !controlNumber || !purpose || !receivedBy || !liters) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const newRecord = new Xcs({
+            date,
+            controlNumber,
+            purpose,
+            receivedBy,
+            liters
+        });
+
+        await newRecord.save();
+        res.status(201).json(newRecord);
+    } catch (error) {
+        console.error("Error creating XCS record:", error);
+        res.status(500).json({ error: "Error creating XCS record", details: error.message });
     }
 });
 
