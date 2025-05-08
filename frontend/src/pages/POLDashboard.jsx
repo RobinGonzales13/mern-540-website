@@ -96,16 +96,16 @@ const POLDashboard = () => {
     const renderContent = () => {
         switch (selectedTab) {
             case "Inventory":
-                return <Text fontSize="lg">Inventory Content Here</Text>;
+                return <Inventory />;
             case "Ground Fuel Report":
-                return <Text fontSize="lg">Ground Fuel Report Content Here</Text>;
+                return <GroundFuelReport />;
             case "Jet Fuel Report":
-                return <Text fontSize="lg">Jet Fuel Report Content Here</Text>;
+                return <JetFuelReport />;
             case "Gas Slip Records":
                 return (
                     <Box p={6} w="100%">
                         <Text fontSize="lg" mb={4}>Add New Gas Slip Record</Text>
-
+    
                         <VStack spacing={4} align="stretch">
                             <FormControl isRequired>
                                 <FormLabel>Inventory Type</FormLabel>
@@ -114,7 +114,7 @@ const POLDashboard = () => {
                                     <option value="xcs">XCS</option>
                                 </Select>
                             </FormControl>
-
+    
                             <FormControl isRequired>
                                 <FormLabel>Control Number</FormLabel>
                                 <Input 
@@ -123,7 +123,7 @@ const POLDashboard = () => {
                                     onChange={(e) => setControlNumber(e.target.value)} 
                                 />
                             </FormControl>
-
+    
                             <FormControl isRequired>
                                 <FormLabel>Purpose</FormLabel>
                                 <Input 
@@ -132,7 +132,7 @@ const POLDashboard = () => {
                                     onChange={(e) => setPurpose(e.target.value)} 
                                 />
                             </FormControl>
-
+    
                             <FormControl isRequired>
                                 <FormLabel>Received By</FormLabel>
                                 <Input 
@@ -141,7 +141,7 @@ const POLDashboard = () => {
                                     onChange={(e) => setReceivedBy(e.target.value)} 
                                 />
                             </FormControl>
-
+    
                             <FormControl isRequired>
                                 <FormLabel>Liters</FormLabel>
                                 <Input 
@@ -150,9 +150,9 @@ const POLDashboard = () => {
                                     onChange={(e) => setLiters(e.target.value)} 
                                 />
                             </FormControl>
-
+    
                             {message && <Text color="red.500">{message}</Text>}
-
+    
                             <Button colorScheme="blue" onClick={handleSubmit}>Submit</Button>
                         </VStack>
                     </Box>
