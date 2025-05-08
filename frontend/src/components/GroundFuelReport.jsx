@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, Divider, Button } from "@chakra-ui/react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
 import axios from "axios";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 const GroundFuelReport = () => {
     const [monthlyData, setMonthlyData] = useState([]);
@@ -38,10 +36,6 @@ const GroundFuelReport = () => {
                 axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/xcs/totals")
             ]);            
 
-            if (!adfResponse.data || !xcsResponse.data) {
-                throw new Error("Invalid response data");
-            }
-
             setAdfQuarterly(adfResponse.data.quarterly || []);
             setXcsQuarterly(xcsResponse.data.quarterly || []);
 
@@ -74,16 +68,8 @@ const GroundFuelReport = () => {
         }
     };
 
-    const generatePDF = () => {
-        const doc = new jsPDF();
-        const reportContent = document.getElementById("reportContent");
-
-        html2canvas(reportContent).then((canvas) => {
-            const imgData = canvas.toDataURL("image/png");
-            doc.addImage(imgData, "PNG", 10, 10, 180, 160);
-
-            doc.save("Ground_Fuel_Report.pdf");
-        });
+    const handlePrint = () => {
+        window.print();
     };
 
     if (!monthlyData.length || !fuelTotals.monthly.length) {
@@ -91,7 +77,16 @@ const GroundFuelReport = () => {
     }
 
     return (
-        <Box p={4} id="reportContent">
+        <Box p={4}>
+            <Button 
+                position="absolute" 
+                top="10px" 
+                right="10px" 
+                onClick={handlePrint}
+            >
+                Print
+            </Button>
+
             <Heading mb={6}>Ground Fuel Report</Heading>
 
             {/* Current Statistics */}
@@ -180,8 +175,28 @@ const GroundFuelReport = () => {
                 </Box>
             </Box>
 
-            {/* Print Button */}
-            <Button colorScheme="blue" onClick={generatePDF}>Print Report</Button>
+            {/* ADF Table for Printing */}
+            <Box display={{ base: "none", print: "block" }} mt={6}>
+                <Heading size="md" mb={4}>ADF Quarterly Table</Heading>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                        <tr>
+                            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Quarter</th>
+                            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Total Liters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {adfQuarterly.map((quarter, index) => (
+                            <tr key={index}>
+                                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{quarter.quarter}</td>
+                                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                                    {quarter.totalLiters.toLocaleString()} L
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </Box>
         </Box>
     );
 };
