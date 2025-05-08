@@ -197,7 +197,7 @@ const POLDashboard = () => {
                     <Spacer />
 
                     <HStack spacing={4}>
-                        <Text>{user?.email || "Admin"}</Text>
+                        <Text>{user?.username ? user.username.toUpperCase() : "Admin"}</Text>
                         <Button colorScheme="red" onClick={handleLogout}>Logout</Button>
                     </HStack>
                 </Flex>
