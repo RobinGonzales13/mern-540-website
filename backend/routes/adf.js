@@ -98,7 +98,7 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-// POST create new ADF record
+// POST create a new ADF record
 router.post("/", async (req, res) => {
     try {
         const { date, controlNumber, purpose, receivedBy, liters } = req.body;
@@ -107,19 +107,19 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        const newRecord = new Adf({
+        const newAdfRecord = new Adf({
             date,
             controlNumber,
             purpose,
             receivedBy,
-            liters
+            liters,
         });
 
-        await newRecord.save();
-        res.status(201).json(newRecord);
+        await newAdfRecord.save();
+        res.status(201).json(newAdfRecord);
     } catch (error) {
-        console.error("Error creating ADF record:", error);
-        res.status(500).json({ error: "Error creating ADF record", details: error.message });
+        console.error("Error adding ADF record:", error);
+        res.status(500).json({ error: "Error adding ADF record", details: error.message });
     }
 });
 

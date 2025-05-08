@@ -78,10 +78,9 @@ const POLDashboard = () => {
                 purpose,
                 receivedBy,
                 liters,
-            });
+            });            
 
             setMessage("Record added successfully!");
-            // Clear the form after submission
             setControlNumber("");
             setPurpose("");
             setReceivedBy("");
