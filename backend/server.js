@@ -12,6 +12,7 @@ import helmet from "helmet";
 
 import adfRoutes from "./routes/adf.js";
 import xcsRoutes from "./routes/xcs.js";
+import reportRoutes from "./routes/report.js";
 
 
 dotenv.config();
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 
 // Rate limiting
@@ -58,6 +59,7 @@ app.use("/api/contact", contactRoutes);
 
 app.use("/api/adf", adfRoutes);
 app.use("/api/xcs", xcsRoutes);
+app.use("/api/reports", reportRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
