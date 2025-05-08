@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, Divider } from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, Divider, Button } from "@chakra-ui/react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
 import axios from "axios";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const GroundFuelReport = () => {
     const [monthlyData, setMonthlyData] = useState([]);
@@ -36,12 +38,10 @@ const GroundFuelReport = () => {
                 axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/xcs/totals")
             ]);            
 
-            // Check if both responses are successful
             if (!adfResponse.data || !xcsResponse.data) {
                 throw new Error("Invalid response data");
             }
 
-            // Store quarterly data separately for the bar chart
             setAdfQuarterly(adfResponse.data.quarterly || []);
             setXcsQuarterly(xcsResponse.data.quarterly || []);
 
@@ -62,7 +62,6 @@ const GroundFuelReport = () => {
             setFuelTotals(combinedTotals);
         } catch (error) {
             console.error("Error fetching totals:", error);
-            // Set default values if there's an error
             setFuelTotals({
                 daily: 0,
                 weekly: 0,
@@ -75,12 +74,24 @@ const GroundFuelReport = () => {
         }
     };
 
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        const reportContent = document.getElementById("reportContent");
+
+        html2canvas(reportContent).then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+            doc.addImage(imgData, "PNG", 10, 10, 180, 160);
+
+            doc.save("Ground_Fuel_Report.pdf");
+        });
+    };
+
     if (!monthlyData.length || !fuelTotals.monthly.length) {
         return <Box p={4}>Loading...</Box>;
     }
 
     return (
-        <Box p={4}>
+        <Box p={4} id="reportContent">
             <Heading mb={6}>Ground Fuel Report</Heading>
 
             {/* Current Statistics */}
@@ -168,6 +179,9 @@ const GroundFuelReport = () => {
                     </ResponsiveContainer>
                 </Box>
             </Box>
+
+            {/* Print Button */}
+            <Button colorScheme="blue" onClick={generatePDF}>Print Report</Button>
         </Box>
     );
 };
