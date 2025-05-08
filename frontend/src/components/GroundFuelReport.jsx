@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, Divider, Button } from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, Divider } from "@chakra-ui/react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
 import axios from "axios";
 
@@ -36,6 +36,10 @@ const GroundFuelReport = () => {
                 axios.get("https://five40airbasegroup-paf-backend.onrender.com/api/xcs/totals")
             ]);            
 
+            if (!adfResponse.data || !xcsResponse.data) {
+                throw new Error("Invalid response data");
+            }
+
             setAdfQuarterly(adfResponse.data.quarterly || []);
             setXcsQuarterly(xcsResponse.data.quarterly || []);
 
@@ -68,20 +72,13 @@ const GroundFuelReport = () => {
         }
     };
 
-    const handlePrint = () => {
-        window.print();
-    };
-
     if (!monthlyData.length || !fuelTotals.monthly.length) {
         return <Box p={4}>Loading...</Box>;
     }
 
     return (
         <Box p={4}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={6}>
-                <Heading as="h2">Ground Fuel Report</Heading>
-                <Button onClick={handlePrint}>Print</Button>
-            </Box>
+            <Heading mb={6}>Ground Fuel Report</Heading>
 
             {/* Current Statistics */}
             <Box borderWidth="1px" borderRadius="lg" p={4} mb={6}>
@@ -167,29 +164,6 @@ const GroundFuelReport = () => {
                         </BarChart>
                     </ResponsiveContainer>
                 </Box>
-            </Box>
-
-            {/* ADF Table for Printing */}
-            <Box display={{ base: "none", print: "block" }} mt={6}>
-                <Heading size="md" mb={4}>ADF Quarterly Table</Heading>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                        <tr>
-                            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Quarter</th>
-                            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Total Liters</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {adfQuarterly.map((quarter, index) => (
-                            <tr key={index}>
-                                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{quarter.quarter}</td>
-                                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                                    {quarter.totalLiters.toLocaleString()} L
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
             </Box>
         </Box>
     );
