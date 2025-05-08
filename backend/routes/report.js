@@ -1,7 +1,7 @@
-const express = require("express");
-const Adf = require("../models/Adf");
-const Xcs = require("../models/Xcs"); 
-const GroundFuel = require("../models/GroundFuel");
+import express from "express";
+import Adf from "../models/Adf.js";
+import Xcs from "../models/Xcs.js"; 
+import GroundFuel from "../models/GroundFuel.js";
 
 const router = express.Router();
 
@@ -74,7 +74,6 @@ const getMonthlyLiters = async (model) => {
 
     return months;
 };
-
 
 router.get("/ground-fuel", async (req, res) => {
     try {
