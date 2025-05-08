@@ -115,5 +115,4 @@ router.get("/adf-xcs", async (req, res) => {
     }
 });
 
-
-module.exports = router;
+export default router;
