@@ -53,6 +53,21 @@ router.get("/totals", async (req, res) => {
     }
 });
 
+// POST add many ADF records
+router.post("/addMany", async (req, res) => {
+    try {
+        const { adf } = req.body;
+        if (!adf || !Array.isArray(adf)) {
+            return res.status(400).json({ error: "Invalid data format" });
+        }
+        await Adf.insertMany(adf);
+        res.status(201).json({ message: "ADF records added successfully" });
+    } catch (error) {
+        console.error("Error adding ADF records:", error);
+        res.status(500).json({ error: "Error adding ADF records", details: error.message });
+    }
+});
+
 // Helper: Total liters since a given date
 const getTotalLiters = async (model, startDate) => {
     const result = await model.aggregate([
