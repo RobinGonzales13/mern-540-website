@@ -53,6 +53,7 @@ router.get("/totals", async (req, res) => {
     }
 });
 
+/*
 // POST add many ADF records
 router.post("/addMany", async (req, res) => {
     try {
@@ -65,6 +66,52 @@ router.post("/addMany", async (req, res) => {
     } catch (error) {
         console.error("Error adding ADF records:", error);
         res.status(500).json({ error: "Error adding ADF records", details: error.message });
+    }
+});
+*/
+
+// PUT update ADF record
+router.put("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { date, controlNumber, purpose, receivedBy, liters } = req.body;
+
+        // Ensure all necessary fields are present
+        if (!date || !controlNumber || !purpose || !receivedBy || !liters) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const updatedRecord = await Adf.findByIdAndUpdate(
+            id, 
+            { date, controlNumber, purpose, receivedBy, liters },
+            { new: true } // Returns the updated record
+        );
+
+        if (!updatedRecord) {
+            return res.status(404).json({ error: "Record not found" });
+        }
+
+        res.json(updatedRecord); // Return updated record
+    } catch (error) {
+        console.error("Error updating ADF record:", error);
+        res.status(500).json({ error: "Error updating ADF record", details: error.message });
+    }
+});
+
+// DELETE ADF record
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedRecord = await Adf.findByIdAndDelete(id);
+
+        if (!deletedRecord) {
+            return res.status(404).json({ error: "Record not found" });
+        }
+
+        res.json({ message: "Record deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting ADF record:", error);
+        res.status(500).json({ error: "Error deleting ADF record", details: error.message });
     }
 });
 

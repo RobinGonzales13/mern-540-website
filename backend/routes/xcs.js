@@ -53,6 +53,7 @@ router.get("/totals", async (req, res) => {
     }
 });
 
+/*
 // Add multiple XCS records
 router.post("/addMany", async (req, res) => {
     try {
@@ -65,6 +66,52 @@ router.post("/addMany", async (req, res) => {
         res.status(201).json({ message: "Records added to XCS successfully" });
     } catch (error) {
         res.status(500).json({ error: "Error adding XCS records", details: error.message });
+    }
+});
+*/
+
+// PUT update XCS record
+router.put("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { date, controlNumber, purpose, receivedBy, liters } = req.body;
+
+        // Ensure all necessary fields are present
+        if (!date || !controlNumber || !purpose || !receivedBy || !liters) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const updatedRecord = await Xcs.findByIdAndUpdate(
+            id, 
+            { date, controlNumber, purpose, receivedBy, liters },
+            { new: true } // Returns the updated record
+        );
+
+        if (!updatedRecord) {
+            return res.status(404).json({ error: "Record not found" });
+        }
+
+        res.json(updatedRecord); // Return updated record
+    } catch (error) {
+        console.error("Error updating XCS record:", error);
+        res.status(500).json({ error: "Error updating XCS record", details: error.message });
+    }
+});
+
+// DELETE XCS record
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedRecord = await Xcs.findByIdAndDelete(id);
+
+        if (!deletedRecord) {
+            return res.status(404).json({ error: "Record not found" });
+        }
+
+        res.json({ message: "Record deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting XCS record:", error);
+        res.status(500).json({ error: "Error deleting XCS record", details: error.message });
     }
 });
 
