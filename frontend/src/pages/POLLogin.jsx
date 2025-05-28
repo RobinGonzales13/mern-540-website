@@ -12,6 +12,7 @@ import {
   Image,
   Flex,
   Container,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +23,27 @@ const API_URL = import.meta.env.VITE_API_URL;
 const POLLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const toast = useToast();
   const navigate = useNavigate();
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
+  const validateOtp = (otp) => {
+    return otp.length === 6 && /^\d+$/.test(otp);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,6 +78,83 @@ const POLLogin = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    
+    if (!validateEmail(email)) {
+      setErrors({ email: "Please enter a valid email address" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/api/pol/request-password-reset`, { email });
+      toast({
+        title: "Success",
+        description: response.data.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      setStep(4);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to send password reset email";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    
+    if (!validateOtp(otp)) {
+      setErrors({ otp: "Please enter a valid 6-digit OTP" });
+      return;
+    }
+    if (!validatePassword(newPassword)) {
+      setErrors({ newPassword: "Password must be at least 6 characters long" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/api/pol/reset-password`, { 
+        email, 
+        otp, 
+        newPassword 
+      });
+      toast({
+        title: "Success",
+        description: response.data.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      setStep(1);
+      setEmail("");
+      setOtp("");
+      setNewPassword("");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to reset password";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+    setLoading(false);
   };
 
   return (
@@ -115,45 +211,134 @@ const POLLogin = () => {
                 color="blue.600"
                 fontWeight="bold"
               >
-                POL Dump Login
+                {step === 1 ? "POL Dump Login" : step === 3 ? "Forgot Password" : "Reset Password"}
               </Heading>
-              <form onSubmit={handleSubmit}>
-                <VStack spacing={4}>
-                  <FormControl isRequired>
-                    <FormLabel fontWeight="medium">Username</FormLabel>
-                    <Input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Enter your username"
+
+              {step === 1 ? (
+                <form onSubmit={handleSubmit}>
+                  <VStack spacing={4}>
+                    <FormControl isRequired>
+                      <FormLabel fontWeight="medium">Username</FormLabel>
+                      <Input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter your username"
+                        size="lg"
+                        focusBorderColor="blue.500"
+                      />
+                    </FormControl>
+                    <FormControl isRequired>
+                      <FormLabel fontWeight="medium">Password</FormLabel>
+                      <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        size="lg"
+                        focusBorderColor="blue.500"
+                      />
+                    </FormControl>
+                    <Button
+                      type="submit"
+                      colorScheme="blue"
+                      w="100%"
                       size="lg"
-                      focusBorderColor="blue.500"
-                    />
-                  </FormControl>
-                  <FormControl isRequired>
-                    <FormLabel fontWeight="medium">Password</FormLabel>
-                    <Input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
+                      isLoading={loading}
+                      loadingText="Logging in..."
+                      mt={4}
+                    >
+                      Login
+                    </Button>
+                    <Text 
+                      color="blue.500" 
+                      cursor="pointer" 
+                      onClick={() => setStep(3)}
+                      _hover={{ textDecoration: "underline" }}
+                      textAlign="center"
+                    >
+                      Forgot Password?
+                    </Text>
+                  </VStack>
+                </form>
+              ) : step === 3 ? (
+                <form onSubmit={handleForgotPassword}>
+                  <VStack spacing={4}>
+                    <FormControl isInvalid={errors.email}>
+                      <FormLabel fontWeight="medium">Email</FormLabel>
+                      <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        size="lg"
+                        focusBorderColor="blue.500"
+                      />
+                      <FormErrorMessage>{errors.email}</FormErrorMessage>
+                    </FormControl>
+                    <Button
+                      type="submit"
+                      colorScheme="blue"
+                      w="100%"
                       size="lg"
-                      focusBorderColor="blue.500"
-                    />
-                  </FormControl>
-                  <Button
-                    type="submit"
-                    colorScheme="blue"
-                    w="100%"
-                    size="lg"
-                    isLoading={loading}
-                    loadingText="Logging in..."
-                    mt={4}
-                  >
-                    Login
-                  </Button>
-                </VStack>
-              </form>
+                      isLoading={loading}
+                      loadingText="Sending reset link..."
+                      mt={4}
+                    >
+                      Send Reset Link
+                    </Button>
+                    <Text 
+                      color="blue.500" 
+                      cursor="pointer" 
+                      onClick={() => setStep(1)}
+                      _hover={{ textDecoration: "underline" }}
+                      textAlign="center"
+                    >
+                      Back to Login
+                    </Text>
+                  </VStack>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword}>
+                  <VStack spacing={4}>
+                    <FormControl isInvalid={errors.otp}>
+                      <FormLabel fontWeight="medium">OTP</FormLabel>
+                      <Input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="Enter 6-digit OTP"
+                        size="lg"
+                        focusBorderColor="blue.500"
+                      />
+                      <FormErrorMessage>{errors.otp}</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.newPassword}>
+                      <FormLabel fontWeight="medium">New Password</FormLabel>
+                      <Input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        size="lg"
+                        focusBorderColor="blue.500"
+                      />
+                      <FormErrorMessage>{errors.newPassword}</FormErrorMessage>
+                    </FormControl>
+                    <Button
+                      type="submit"
+                      colorScheme="blue"
+                      w="100%"
+                      size="lg"
+                      isLoading={loading}
+                      loadingText="Resetting password..."
+                      mt={4}
+                    >
+                      Reset Password
+                    </Button>
+                  </VStack>
+                </form>
+              )}
             </VStack>
           </Box>
         </Flex>
