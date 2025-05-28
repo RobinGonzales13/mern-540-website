@@ -20,6 +20,7 @@ import POLDashboard from "./pages/POLDashboard";
 import History from "./pages/History";
 import Contact from "./pages/Contact";
 import POLRoute from "./components/ui/POLRoute";
+import AdminResetPassword from "./pages/AdminResetPassword";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/pol-login" element={<POLLogin />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/admin-reset-password/:token" element={<AdminResetPassword />} />
 
         {/* Mission Vision Pages */}
         <Route path="/541st-mission-vision" element={<MissionVision541 />} />
