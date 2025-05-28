@@ -160,16 +160,20 @@ export const resetPassword = async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        // Hash the new password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-        // Update user's password
-        user.password = hashedPassword;
+        // Set the new password (the pre-save middleware will hash it)
+        user.password = newPassword;
         await user.save();
 
         // Delete the used token
         resetTokens.delete(token);
+
+        // Verify the password was updated correctly
+        const updatedUser = await POLUser.findOne({ username: resetData.username });
+        const isMatch = await bcrypt.compare(newPassword, updatedUser.password);
+        
+        if (!isMatch) {
+            throw new Error("Password update verification failed");
+        }
 
         res.json({ success: true, message: "Password has been reset successfully" });
     } catch (error) {
