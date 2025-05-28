@@ -13,6 +13,7 @@ import {
   Flex,
   Container,
   FormErrorMessage,
+  Textarea,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -23,27 +24,13 @@ const API_URL = import.meta.env.VITE_API_URL;
 const POLLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [requestUsername, setRequestUsername] = useState("");
+  const [requestReason, setRequestReason] = useState("");
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const toast = useToast();
   const navigate = useNavigate();
-
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
-
-  const validateOtp = (otp) => {
-    return otp.length === 6 && /^\d+$/.test(otp);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,75 +67,40 @@ const POLLogin = () => {
     }
   };
 
-  const handleForgotPassword = async (e) => {
+  const handlePasswordResetRequest = async (e) => {
     e.preventDefault();
     setErrors({});
     
-    if (!validateEmail(email)) {
-      setErrors({ email: "Please enter a valid email address" });
+    if (!requestUsername.trim()) {
+      setErrors({ username: "Please enter your username" });
+      return;
+    }
+    if (!requestReason.trim()) {
+      setErrors({ reason: "Please provide a reason for password reset" });
       return;
     }
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/pol/request-password-reset`, { email });
-      toast({
-        title: "Success",
-        description: response.data.message,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
+      const response = await axios.post(`${API_URL}/api/pol/request-password-reset`, {
+        username: requestUsername,
+        reason: requestReason
       });
-      setStep(4);
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || "Failed to send password reset email";
+      
       toast({
-        title: "Error",
-        description: errorMessage,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-    setLoading(false);
-  };
-
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    setErrors({});
-    
-    if (!validateOtp(otp)) {
-      setErrors({ otp: "Please enter a valid 6-digit OTP" });
-      return;
-    }
-    if (!validatePassword(newPassword)) {
-      setErrors({ newPassword: "Password must be at least 6 characters long" });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await axios.post(`${API_URL}/api/pol/reset-password`, { 
-        email, 
-        otp, 
-        newPassword 
-      });
-      toast({
-        title: "Success",
-        description: response.data.message,
+        title: "Request Sent",
+        description: "Your password reset request has been sent to the administrator. You will be contacted shortly.",
         status: "success",
         duration: 5000,
         isClosable: true,
       });
       setStep(1);
-      setEmail("");
-      setOtp("");
-      setNewPassword("");
+      setRequestUsername("");
+      setRequestReason("");
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Failed to reset password";
       toast({
-        title: "Error",
-        description: errorMessage,
+        title: "Request Failed",
+        description: error.response?.data?.message || "Failed to send password reset request",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -211,7 +163,7 @@ const POLLogin = () => {
                 color="blue.600"
                 fontWeight="bold"
               >
-                {step === 1 ? "POL Dump Login" : step === 3 ? "Forgot Password" : "Reset Password"}
+                {step === 1 ? "POL Dump Login" : "Request Password Reset"}
               </Heading>
 
               {step === 1 ? (
@@ -253,7 +205,7 @@ const POLLogin = () => {
                     <Text 
                       color="blue.500" 
                       cursor="pointer" 
-                      onClick={() => setStep(3)}
+                      onClick={() => setStep(2)}
                       _hover={{ textDecoration: "underline" }}
                       textAlign="center"
                     >
@@ -261,20 +213,32 @@ const POLLogin = () => {
                     </Text>
                   </VStack>
                 </form>
-              ) : step === 3 ? (
-                <form onSubmit={handleForgotPassword}>
+              ) : (
+                <form onSubmit={handlePasswordResetRequest}>
                   <VStack spacing={4}>
-                    <FormControl isInvalid={errors.email}>
-                      <FormLabel fontWeight="medium">Email</FormLabel>
+                    <FormControl isInvalid={errors.username}>
+                      <FormLabel fontWeight="medium">Username</FormLabel>
                       <Input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
+                        type="text"
+                        value={requestUsername}
+                        onChange={(e) => setRequestUsername(e.target.value)}
+                        placeholder="Enter your username"
                         size="lg"
                         focusBorderColor="blue.500"
                       />
-                      <FormErrorMessage>{errors.email}</FormErrorMessage>
+                      <FormErrorMessage>{errors.username}</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.reason}>
+                      <FormLabel fontWeight="medium">Reason for Reset</FormLabel>
+                      <Textarea
+                        value={requestReason}
+                        onChange={(e) => setRequestReason(e.target.value)}
+                        placeholder="Please explain why you need a password reset"
+                        size="lg"
+                        focusBorderColor="blue.500"
+                        rows={4}
+                      />
+                      <FormErrorMessage>{errors.reason}</FormErrorMessage>
                     </FormControl>
                     <Button
                       type="submit"
@@ -282,10 +246,10 @@ const POLLogin = () => {
                       w="100%"
                       size="lg"
                       isLoading={loading}
-                      loadingText="Sending reset link..."
+                      loadingText="Sending request..."
                       mt={4}
                     >
-                      Send Reset Link
+                      Send Reset Request
                     </Button>
                     <Text 
                       color="blue.500" 
@@ -298,46 +262,6 @@ const POLLogin = () => {
                     </Text>
                   </VStack>
                 </form>
-              ) : (
-                <form onSubmit={handleResetPassword}>
-                  <VStack spacing={4}>
-                    <FormControl isInvalid={errors.otp}>
-                      <FormLabel fontWeight="medium">OTP</FormLabel>
-                      <Input
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        placeholder="Enter 6-digit OTP"
-                        size="lg"
-                        focusBorderColor="blue.500"
-                      />
-                      <FormErrorMessage>{errors.otp}</FormErrorMessage>
-                    </FormControl>
-                    <FormControl isInvalid={errors.newPassword}>
-                      <FormLabel fontWeight="medium">New Password</FormLabel>
-                      <Input
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="Enter new password"
-                        size="lg"
-                        focusBorderColor="blue.500"
-                      />
-                      <FormErrorMessage>{errors.newPassword}</FormErrorMessage>
-                    </FormControl>
-                    <Button
-                      type="submit"
-                      colorScheme="blue"
-                      w="100%"
-                      size="lg"
-                      isLoading={loading}
-                      loadingText="Resetting password..."
-                      mt={4}
-                    >
-                      Reset Password
-                    </Button>
-                  </VStack>
-                </form>
               )}
             </VStack>
           </Box>
@@ -348,3 +272,4 @@ const POLLogin = () => {
 };
 
 export default POLLogin;
+
