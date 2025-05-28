@@ -154,18 +154,26 @@ export const resetPassword = async (req, res) => {
             return res.status(400).json({ success: false, message: "Reset token has expired" });
         }
 
+        // Find user by username
+        const user = await POLUser.findOne({ username: resetData.username });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
         // Hash the new password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         // Update user's password
-        await POLUser.findByIdAndUpdate(resetData.userId, { password: hashedPassword });
+        user.password = hashedPassword;
+        await user.save();
 
         // Delete the used token
         resetTokens.delete(token);
 
         res.json({ success: true, message: "Password has been reset successfully" });
     } catch (error) {
+        console.error("Error resetting password:", error);
         res.status(500).json({ success: false, message: "Error resetting password" });
     }
 }; 
