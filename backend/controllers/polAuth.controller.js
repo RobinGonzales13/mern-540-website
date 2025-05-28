@@ -95,7 +95,7 @@ export const requestPasswordReset = async (req, res) => {
                     </div>
                     <p>Click the button below to reset the password:</p>
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="${process.env.FRONTEND_URL}/admin-reset-password/${token}" 
+                        <a href="https://five40airbasegroup-paf-frontend.onrender.com/admin-reset-password/${token}" 
                            style="background-color: #4299e1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                             Reset Password
                         </a>
