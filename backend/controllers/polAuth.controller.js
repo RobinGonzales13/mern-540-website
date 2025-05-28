@@ -154,20 +154,16 @@ export const resetPassword = async (req, res) => {
             return res.status(400).json({ success: false, message: "Reset token has expired" });
         }
 
-        // Find user by username
         const user = await POLUser.findOne({ username: resetData.username });
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        // Set the new password (the pre-save middleware will hash it)
         user.password = newPassword;
         await user.save();
 
-        // Delete the used token
         resetTokens.delete(token);
 
-        // Verify the password was updated correctly
         const updatedUser = await POLUser.findOne({ username: resetData.username });
         const isMatch = await bcrypt.compare(newPassword, updatedUser.password);
         

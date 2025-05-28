@@ -87,7 +87,7 @@ const AdminResetPassword = () => {
         isClosable: true,
       });
 
-      navigate("/admin-login");
+      navigate("/pol-login");
     } catch (error) {
       toast({
         title: "Error",
